@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <fstream>
 #include <iomanip> // 用于格式化输出
-#include <stdexcept> // 用于异常处理
 
 // 定义DRAM_SIZE为128MB
 const uint64_t DRAM_SIZE = 1024 * 1024 * 128;
