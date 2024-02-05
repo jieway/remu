@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-#include "cup.h"
+#include "../cup.h"
 
 void generate_rv_assembly(const std::string& c_src) {
     std::string command = "riscv64-unknown-elf-gcc -S" + c_src + " -o ";
@@ -90,20 +90,31 @@ const std::string start = ".global _start \n _start:";
 
 // Test addi instruction
 TEST(RVTests, TestAddi) {
-     std::string code = start + "addi x31, x0, 42 \n";
+     std::string code = start +
+         "addi x31, x0, 42 \n";
     Cpu cpu = rv_helper(code, "test_addi", 1);
     EXPECT_EQ(cpu.regs[31], 42) << "Error: x31 should be 42 after ADDI instruction";
 }
 
 // Test add instruction
 TEST(RVTests, TestAdd) {
-    std::string code = ".global _start \n _start:"
-                       "addi x2, x0, 10 \n"   // 将 10 加载到 x2 中
-                       "addi x3, x0, 20 \n"   // 将 20 加载到 x3 中
-                       "add x1, x2, x3 \n";  // x1 = x2 + x3
+    std::string code = start +
+        "addi x2, x0, 10 \n"   // 将 10 加载到 x2 中
+        "addi x3, x0, 20 \n"   // 将 20 加载到 x3 中
+        "add x1, x2, x3 \n";  // x1 = x2 + x3
     Cpu cpu = rv_helper(code, "test_add", 3);
 
     // 验证 x1 的值是否正确
     EXPECT_EQ(cpu.regs[1], 30) << "Error: x1 should be the result of ADD instruction";
 }
 
+// Test slli instruction
+TEST(RVTests, TestSlli) {
+    std::string code = start +
+        "addi x2, x0, 5 \n"    // Load 5 into x2
+        "slli x1, x2, 3 \n";   // x1 = x2 << 3
+    Cpu cpu = rv_helper(code, "test_slli", 2);
+
+    // Verify if x1 has the correct value
+    EXPECT_EQ(cpu.regs[1], 5 << 3) << "Error: x1 should be the result of SLLI instruction";
+}

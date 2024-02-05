@@ -9,6 +9,7 @@
 #include <optional>
 #include "cup.h"
 #include "exception.h"
+#include "instructions.h"
 
 uint64_t Cpu::load(uint64_t addr, uint64_t size) {
     try {
@@ -42,29 +43,9 @@ std::optional<uint64_t>  Cpu::execute(uint32_t inst) {
         uint32_t rs2 = (inst >> 20) & 0x1f;
         uint32_t funct3 = (inst >> 12) & 0x7;
         uint32_t funct7 = (inst >> 25) & 0x7f;
+        int64_t immediate = static_cast<int64_t>(inst & 0xfff00000) >> 20;
 
-        // x0 is hardwired zero
-        regs[0] = 0;
-
-        std::cout << "Executing instruction: 0x" << std::hex << inst << std::dec << std::endl;
-
-        // execute stage
-        switch (opcode) {
-            case 0x13: { // addi
-                int64_t imm = static_cast<int32_t>(inst & 0xfff00000) >> 20;
-                std::cout << "ADDI: x" << rd << " = x" << rs1 << " + " << imm << std::endl;
-                regs[rd] = regs[rs1] + imm;
-                return update_pc();
-            }
-            case 0x33: { // add
-                std::cout << "ADD: x" << rd << " = x" << rs1 << " + x" << rs2 << std::endl;
-                regs[rd] = regs[rs1] + regs[rs2];
-                return update_pc();
-            }
-            default: {
-                throw Exception(Exception::Type::IllegalInstruction, opcode);
-            }
-        }
+        return InstructionExecutor::execute(*this, opcode, rd, rs1, rs2, funct3, funct7, immediate);
     } catch (const Exception& e) {
         std::cerr << "Exception execute : " << e << std::endl;
         return std::nullopt;  // 使用 std::optional 表示异常

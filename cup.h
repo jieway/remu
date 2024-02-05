@@ -47,8 +47,7 @@ public:
         return pc + 4;
     }
 
-    std::optional<uint64_t>  execute(uint32_t inst);
-
+    std::optional<uint64_t> execute(uint32_t inst);
     void dump_registers();
 
     void dump_pc() const;

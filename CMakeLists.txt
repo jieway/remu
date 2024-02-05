@@ -14,6 +14,8 @@ set(COMMON_SOURCES
         cup.cpp
         exception.h
         exception.cpp
+        instructions.h
+        instructions.cpp
 )
 
 # 库
@@ -32,7 +34,7 @@ enable_testing()
 add_subdirectory("third_party/googletest")
 
 add_executable(g_test
-        g_test.cc
+        tests/g_test.cc
 )
 
 # 将库链接到 g_test 可执行文件
