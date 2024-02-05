@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <fstream>
 #include "cup.h"
+#include "exception.h"
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -20,15 +21,19 @@ int main(int argc, char* argv[]) {
     std::vector<uint8_t> code(std::istreambuf_iterator<char>(file), {});
     Cpu cpu(code); // 假设Cpu类的构造函数接受指令代码的vector
 
-    while (true) {
-        try {
+
+    try {
+        while (true) {
             uint32_t inst = cpu.fetch();
-            uint64_t new_pc = cpu.execute(inst);
-            cpu.pc = new_pc;
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            break;
+            auto new_pc = cpu.execute(inst);
+            if (new_pc.has_value()) {
+                cpu.pc = new_pc.value();
+            } else {
+                break;
+            }
         }
+    } catch (const Exception& e) {
+        std::cerr << "Exception main: " << e << std::endl;
     }
 
     // 使用cpu对象进行操作

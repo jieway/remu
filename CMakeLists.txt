@@ -12,6 +12,8 @@ set(COMMON_SOURCES
         bus.cpp
         cup.h
         cup.cpp
+        exception.h
+        exception.cpp
 )
 
 # 库

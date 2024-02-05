@@ -14,6 +14,7 @@
 #include <string>
 #include "param.h"
 #include "bus.h"
+#include <optional>
 
 class Cpu {
 public:
@@ -46,7 +47,7 @@ public:
         return pc + 4;
     }
 
-    uint64_t execute(uint32_t inst);
+    std::optional<uint64_t>  execute(uint32_t inst);
 
     void dump_registers();
 

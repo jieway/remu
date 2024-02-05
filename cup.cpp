@@ -6,46 +6,86 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip> // 用于格式化输出
+#include <optional>
 #include "cup.h"
-
+#include "exception.h"
 
 uint64_t Cpu::load(uint64_t addr, uint64_t size) {
-    return bus.load(addr, size);
+    try {
+        return bus.load(addr, size);
+    } catch (const Exception& e) {
+        std::cerr << "Exception load: " << e << std::endl;
+    }
 }
 
 void Cpu::store(uint64_t addr, uint64_t size, uint64_t value) {
-    bus.store(addr, size, value);
+    try {
+        bus.store(addr, size, value);
+    } catch (const Exception& e) {
+        std::cerr << "Exception store: " << e << std::endl;
+    }
 }
 
 uint32_t Cpu::fetch() {
-    return bus.load(pc, 32);
+    try {
+        bus.load(pc, 32);
+    } catch (const Exception& e) {
+        std::cerr << "Exception fetch: " << e << std::endl;
+    }
 }
 
-uint64_t Cpu::execute(uint32_t inst) {
-    uint32_t opcode = inst & 0x7f;
-    uint32_t rd = (inst >> 7) & 0x1f;
-    uint32_t rs1 = (inst >> 15) & 0x1f;
-    uint32_t rs2 = (inst >> 20) & 0x1f;
-    uint32_t funct3 = (inst >> 12) & 0x7;
-    uint32_t funct7 = (inst >> 25) & 0x7f;
+std::optional<uint64_t>  Cpu::execute(uint32_t inst) {
+    try {
+        uint32_t opcode = inst & 0x7f;
+        uint32_t rd = (inst >> 7) & 0x1f;
+        uint32_t rs1 = (inst >> 15) & 0x1f;
+        uint32_t rs2 = (inst >> 20) & 0x1f;
+        uint32_t funct3 = (inst >> 12) & 0x7;
+        uint32_t funct7 = (inst >> 25) & 0x7f;
 
-    // x0 is hardwired zero
-    regs[0] = 0;
+        // x0 is hardwired zero
+        regs[0] = 0;
 
-    // execute stage
-    switch (opcode) {
-        case 0x13: { // addi
-            int64_t imm = static_cast<int32_t>(inst & 0xfff00000) >> 20;
-            regs[rd] = regs[rs1] + imm;
-            return update_pc();
+        std::cout << "Executing instruction: 0x" << std::hex << inst << std::dec << std::endl;
+
+        // execute stage
+        switch (opcode) {
+
+            case 0x13: { // addi
+                int64_t imm = static_cast<int32_t>(inst & 0xfff00000) >> 20;
+                switch (funct3) {
+                    case 0x0: {
+                        // addi
+                        std::cout << "ADDI: x" << rd << " = x" << rs1 << " + " << imm << std::endl;
+                        regs[rd] = regs[rs1] + imm;
+                        return update_pc();
+                    }
+                    default: {
+                        throw Exception(Exception::Type::IllegalInstruction, opcode);
+                    }
+                }
+            }
+
+            case 0x33: { // add
+                switch (funct3) {
+                    case 0x0: {
+                        // add
+                        std::cout << "ADD: x" << rd << " = x" << rs1 << " + x" << rs2 << std::endl;
+                        regs[rd] = regs[rs1] + regs[rs2];
+                        return update_pc();
+                    }
+                    default: {
+                        throw Exception(Exception::Type::IllegalInstruction, opcode);
+                    }
+                }
+            }
+            default: {
+                throw Exception(Exception::Type::IllegalInstruction, opcode);
+            }
         }
-        case 0x33: { // add
-            regs[rd] = regs[rs1] + regs[rs2];
-            return update_pc();
-        }
-        default: {
-            throw std::invalid_argument("Invalid opcode: " + std::to_string(opcode));
-        }
+    } catch (const Exception& e) {
+        std::cerr << "Exception execute : " << e << std::endl;
+        return std::nullopt;  // 使用 std::optional 表示异常
     }
 }
 
