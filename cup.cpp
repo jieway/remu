@@ -50,34 +50,16 @@ std::optional<uint64_t>  Cpu::execute(uint32_t inst) {
 
         // execute stage
         switch (opcode) {
-
             case 0x13: { // addi
                 int64_t imm = static_cast<int32_t>(inst & 0xfff00000) >> 20;
-                switch (funct3) {
-                    case 0x0: {
-                        // addi
-                        std::cout << "ADDI: x" << rd << " = x" << rs1 << " + " << imm << std::endl;
-                        regs[rd] = regs[rs1] + imm;
-                        return update_pc();
-                    }
-                    default: {
-                        throw Exception(Exception::Type::IllegalInstruction, opcode);
-                    }
-                }
+                std::cout << "ADDI: x" << rd << " = x" << rs1 << " + " << imm << std::endl;
+                regs[rd] = regs[rs1] + imm;
+                return update_pc();
             }
-
             case 0x33: { // add
-                switch (funct3) {
-                    case 0x0: {
-                        // add
-                        std::cout << "ADD: x" << rd << " = x" << rs1 << " + x" << rs2 << std::endl;
-                        regs[rd] = regs[rs1] + regs[rs2];
-                        return update_pc();
-                    }
-                    default: {
-                        throw Exception(Exception::Type::IllegalInstruction, opcode);
-                    }
-                }
+                std::cout << "ADD: x" << rd << " = x" << rs1 << " + x" << rs2 << std::endl;
+                regs[rd] = regs[rs1] + regs[rs2];
+                return update_pc();
             }
             default: {
                 throw Exception(Exception::Type::IllegalInstruction, opcode);
