@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     }
 
     std::vector<uint8_t> code(std::istreambuf_iterator<char>(file), {});
-    Cpu cpu(code); // 假设Cpu类的构造函数接受指令代码的vector
+    cemu::Cpu cpu(code); // 假设Cpu类的构造函数接受指令代码的vector
 
 
     try {
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
                 break;
             }
         }
-    } catch (const Exception& e) {
+    } catch (const cemu::Exception& e) {
         std::cerr << "Exception main: " << e << std::endl;
     }
 
