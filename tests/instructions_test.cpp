@@ -5,26 +5,18 @@
 #include "../src/cup.h"
 #include "test_util.h"
 
-// 消除警告： warning: cannot find entry symbol _start; defaulting to 0000000000000000
-const std::string start = ".global _start \n _start:";
-
-
-// Test lb instruction
-// TEST(RVTests, TestLb) {
-//     std::string code = start +
-//         "addi x2, x0, 0 \n"      // Load 0 into x2
-//         "addi x1, x0, 10 \n"     // Load 10 into x1
-//         "sb x1, 5(x2) \n"        // Store 10 at address x2 + 5
-//         "lb x3, 5(x2) \n";       // Load signed byte from address x2 + 5 into x3
-//     Cpu cpu = rv_helper(code, "test_lb", 3);
-//
-//     // Verify if x3 has the correct value
-//     EXPECT_EQ(cpu.regs[3], 10) << "Error: x3 should be the result of LB instruction";
-// }
-
-
-
 namespace cemu {
+    // TEST(RVTests, TestLb) {
+    //     std::string code = start +
+    //         "addi x2, x0, 0 \n"      // Load 0 into x2
+    //         "addi x1, x0, 10 \n"     // Load 10 into x1
+    //         "sb x1, 5(x2) \n"        // Store 10 at address x2 + 5
+    //         "lb x3, 5(x2) \n";       // Load signed byte from address x2 + 5 into x3
+    //
+    //     Cpu cpu = rv_helper(code, "test_lb", 3);
+    //     EXPECT_EQ(cpu.regs[3], 10) << "Error: x3 should be the result of LB instruction";
+    // }
+
     // Test addi instruction
     TEST(RVTests, TestAddi) {
         std::string code = start +
