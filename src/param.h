@@ -1,6 +1,6 @@
 #include <cstddef> // 引入定义 std::size_t 的头文件
 
-namespace cemu {
+namespace crvemu {
     // 使用 std::size_t 替代 uint64_t 来表示内存大小，更好地表达意图和增加可移植性
     constexpr std::size_t DRAM_BASE = 0x8000'0000;
 

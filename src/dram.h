@@ -4,14 +4,16 @@
 
 #include <vector>
 #include <cstdint>
+#include <optional>
 
-namespace cemu {
+namespace crvemu {
     class Dram {
     public:
-        Dram(const std::vector<uint8_t>& code);
+      Dram();
+      Dram(const std::vector<uint8_t>& code);
 
-        uint64_t load(uint64_t addr, uint64_t size);
-        void store(uint64_t addr, uint64_t size, uint64_t value);
+      std::optional<uint64_t> load(uint64_t addr, uint64_t size);
+      bool store(uint64_t addr, uint64_t size, uint64_t value);
 
     private:
         std::vector<uint8_t> dram;

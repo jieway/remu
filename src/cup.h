@@ -6,17 +6,15 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include <iostream>
 #include <vector>
 #include <array>
 #include <cstdint>
-#include <iomanip>
 #include <string>
 #include "param.h"
 #include "bus.h"
 #include <optional>
 
-namespace cemu {
+namespace crvemu {
     class Cpu {
     public:
 
@@ -38,11 +36,11 @@ namespace cemu {
             regs[2] = DRAM_END; // 设置堆栈指针寄存器的初始值
         }
 
-        uint64_t load(uint64_t addr, uint64_t size);
+        std::optional<uint64_t> load(uint64_t addr, uint64_t size);
 
-        void store(uint64_t addr, uint64_t size, uint64_t value);
+        bool store(uint64_t addr, uint64_t size, uint64_t value);
 
-        uint32_t fetch();
+        std::optional<uint32_t> fetch();
 
         [[nodiscard]] inline uint64_t update_pc() const {
             return pc + 4;
@@ -57,4 +55,5 @@ namespace cemu {
         const std::array<std::string, 32> RVABI; // RISC-V 寄存器名称
     };
 }
+
 #endif // CPU_H

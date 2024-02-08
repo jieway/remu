@@ -4,7 +4,7 @@
 
 #include "exception.h"
 
-namespace cemu {
+namespace crvemu {
     Exception::Exception(Type type, uint64_t value) : type(type), value(value) {}
 
     std::ostream& operator<<(std::ostream& os, const Exception& ex) {

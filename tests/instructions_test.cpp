@@ -5,7 +5,7 @@
 #include "../src/cup.h"
 #include "test_util.h"
 
-namespace cemu {
+namespace crvemu {
     // TEST(RVTests, TestLb) {
     //     std::string code = start +
     //         "addi x2, x0, 0 \n"      // Load 0 into x2
@@ -16,6 +16,21 @@ namespace cemu {
     //     Cpu cpu = rv_helper(code, "test_lb", 3);
     //     EXPECT_EQ(cpu.regs[3], 10) << "Error: x3 should be the result of LB instruction";
     // }
+  // 测试 Dram::load 方法
+  TEST(DramTest, LoadTest) {
+    Dram dram;
+
+    // 测试非法大小
+    EXPECT_EQ(dram.load(0x1000, 7), std::nullopt);
+
+    // 假设 DRAM_BASE 为 0x1000，DRAM 大小为 16 字节
+    // 测试地址超出范围
+    EXPECT_EQ(dram.load(0x1010, 16), std::nullopt);
+
+    // 测试正常加载
+    // dram.store(0x1000, 0x1122334455667788);
+    // EXPECT_EQ(dram.load(0x1000, 64), 0x1122334455667788);
+  }
 
     // Test addi instruction
     TEST(RVTests, TestAddi) {
