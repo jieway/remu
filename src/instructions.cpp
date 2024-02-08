@@ -15,7 +15,7 @@ namespace std {
     };
 }
 
-namespace cemu {
+namespace crvemu {
 
     std::optional<uint64_t> executeAddi(Cpu& cpu, uint32_t inst) {
         uint32_t rd = (inst >> 7) & 0x1f;
@@ -145,37 +145,33 @@ namespace cemu {
     }
 
     std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
-        try {
-            uint32_t opcode = inst & 0x7f;
-            uint32_t funct3 = (inst >> 12) & 0x7;
+      uint32_t opcode = inst & 0x7f;
+      uint32_t funct3 = (inst >> 12) & 0x7;
 
-            // x0 is hardwired zero
-            cpu.regs[0] = 0;
-            std::cout << "Executing instruction: 0x" << std::hex << opcode << std::dec << std::endl;
+      // x0 is hardwired zero
+      cpu.regs[0] = 0;
+      std::cout << "Executing instruction: 0x" << std::hex << opcode << std::dec << std::endl;
 
-            std::unordered_map<
-                std::tuple<uint32_t, uint32_t>,
-                std::function<std::optional<uint64_t>(Cpu&, uint32_t)>
-            > instructionMap = {
-                {std::make_tuple(0x13, 0x0), executeAddi},
-                {std::make_tuple(0x13, 0x1), executeSlli},
-                {std::make_tuple(0x13, 0x2), executeSlti},
-                {std::make_tuple(0x13, 0x3), executeSltiu},
-                {std::make_tuple(0x13, 0x4), executeXori},
-                {std::make_tuple(0x13, 0x5), executefunct70X5},
-                {std::make_tuple(0x13, 0x6), executeOri},
-                {std::make_tuple(0x13, 0x7), executeAndi},
-                {std::make_tuple(0x33, 0x0), executeAdd},
-            };
+      std::unordered_map<
+          std::tuple<uint32_t, uint32_t>,
+          std::function<std::optional<uint64_t>(Cpu&, uint32_t)>
+      > instructionMap = {
+        {std::make_tuple(0x13, 0x0), executeAddi},
+        {std::make_tuple(0x13, 0x1), executeSlli},
+        {std::make_tuple(0x13, 0x2), executeSlti},
+        {std::make_tuple(0x13, 0x3), executeSltiu},
+        {std::make_tuple(0x13, 0x4), executeXori},
+        {std::make_tuple(0x13, 0x5), executefunct70X5},
+        {std::make_tuple(0x13, 0x6), executeOri},
+        {std::make_tuple(0x13, 0x7), executeAndi},
+        {std::make_tuple(0x33, 0x0), executeAdd},
+      };
 
-            auto it = instructionMap.find({opcode, funct3});
-            if (it != instructionMap.end()) {
-                return it->second(cpu, inst);
-            }
-
-        } catch (const Exception& e) {
-            std::cerr << "Exception InstructionExecutor::execute: " << e << std::endl;
-            return std::nullopt;
-        }
+      auto it = instructionMap.find({opcode, funct3});
+      if (it != instructionMap.end()) {
+        return it->second(cpu, inst);
+      }
+      return std::nullopt;  // 确保所有可能的执行路径都有明确的返回值
     }
+
 }
