@@ -1,24 +1,34 @@
 // Bus.cpp
-#include <string>
-#include "exception.h"
 #include "bus.h"
 #include "param.h"
-
-namespace crvemu {
+#include <stdexcept> // For std::runtime_error
+#include <string>
+#include "exception.h"
+namespace cemu {
     Bus::Bus(const std::vector<uint8_t>& code) : dram(code) {}
 
-    std::optional<uint64_t> Bus::load(uint64_t addr, uint64_t size) {
-      if (addr >= DRAM_BASE && addr <= DRAM_END) {
-        return dram.load(addr, size);
-      }
-      return std::nullopt;
+    uint64_t Bus::load(uint64_t addr, uint64_t size) {
+        try {
+            if (addr >= DRAM_BASE && addr <= DRAM_END) {
+                return dram.load(addr, size);
+            } else {
+                throw Exception(Exception::Type::LoadAccessFault, addr);
+            }
+        } catch (const Exception& e) {
+            std::cerr << "Exception Bus::load: " << e << std::endl;
+        }
     }
 
-    bool Bus::store(uint64_t addr, uint64_t size, uint64_t value) {
-      if (addr >= DRAM_BASE && addr <= DRAM_END) {
-        return dram.store(addr, size, value);
-      } else {
-        return false;
-      }
+    void Bus::store(uint64_t addr, uint64_t size, uint64_t value) {
+        try {
+            if (addr >= DRAM_BASE && addr <= DRAM_END) {
+                dram.store(addr, size, value);
+            } else {
+                throw Exception(Exception::Type::StoreAMOAccessFault, addr);
+            }
+        } catch (const Exception& e) {
+            std::cerr << "Exception Bus::store: " << e << std::endl;
+        }
+
     }
 }

@@ -1,6 +1,6 @@
 #include "test_util.h"
 
-namespace crvemu {
+namespace cemu {
     void generate_rv_assembly(const std::string& c_src) {
         std::string command = "riscv64-unknown-elf-gcc -S" + c_src + " -o ";
         int result = std::system(command.c_str());
@@ -66,17 +66,13 @@ namespace crvemu {
         Cpu cpu(binaryCode);
         for (size_t i = 0; i < n_clock; ++i) {
             try {
-                auto inst = cpu.fetch();
-              if (inst.has_value()) {
-                auto new_pc = cpu.execute(inst.value());
+                uint64_t inst = cpu.fetch();
+                auto new_pc = cpu.execute(inst);
                 if (new_pc.has_value()) {
-                  cpu.pc = new_pc.value();
+                    cpu.pc = new_pc.value();
                 } else {
-                  break;
+                    break;
                 }
-              } else {
-                break;
-              }
             } catch (const std::exception& e) {
                 std::cerr << "CPU execution error: " << e.what() << std::endl;
                 break;
