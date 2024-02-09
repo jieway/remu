@@ -1,13 +1,9 @@
-# crvemu
-
-教程：https://github.com/weijiew/everystep
-
 # 使用 C++23 从零实现 RISC-V 模拟器
 
 使用 C++23 从零实现的 RISC-V 模拟器，最终的模拟器可以运行 [xv6](https://pdos.csail.mit.edu/6.828/2012/xv6.html) 操作系统。
 
 - 教程: [everystep](https://github.com/weijiew/everystep)
-- 代码: [cemu](https://github.com/weijiew/cemu)
+- 代码: [crvemu](https://github.com/weijiew/crvemu)
 
 本教程参考了 [Asami](https://github.com/d0iasm) 所写的 Rust 版本的模拟器[教程](https://book.rvemu.app/) ，但是原版只写了前三章。此外也参考了 [Rare](https://github.com/siriusdemon/Rare) 对 rvemu 的改进 [Rare](https://siriusdemon.github.io/Rare/) 这也是一个 Rust 版本的并且已经完结了，对 rust 版本感兴趣的可以参考上面所给出对应的链接。
 
@@ -29,21 +25,7 @@
 
 使用 docker 开发，其内部包含了一个 Ubuntu 20.04，其中用到了 `riscv64-unknown-elf-gcc`， 也可以用 clang 来编译。
 
-lab0-start-code 分支是一个包含了 gtest 的启动代码。项目名称为 cemu ，即 C++ emulate 的缩写。
-
-```sh
-git clone --recurse-submodules https://github.com/weijiew/cemu/tree/lab0-start-code
-cd cemu && mkdir -p build && cd build
-cmake .. && make -j $(nproc)
-./cemu
-# Hello, World!
-```
-
-验证 gtest ：
-
-```sh
-cmake .. && make -j $(nproc) && ./g_test
-```
+lab0-start-code 分支是一个包含了 gtest 的启动代码。项目名称为 crvemu ，即 C++ RISC-V Emulate 的缩写。
 
 ### 问题
 
