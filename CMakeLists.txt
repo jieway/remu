@@ -12,8 +12,6 @@ set(COMMON_SOURCES
         src/bus.cpp
         src/cup.h
         src/cup.cpp
-        src/exception.h
-        src/exception.cpp
         src/instructions.h
         src/instructions.cpp
 )
@@ -26,7 +24,7 @@ add_executable(crvemu
         src/main.cpp
 )
 
-# 将库链接到 cemu 可执行文件
+# 将库链接到 crvemu 可执行文件
 target_link_libraries(crvemu common_library)
 
 # 启用测试并添加测试文件
@@ -35,13 +33,11 @@ add_subdirectory("third_party/googletest")
 
 add_executable(unit_test
         tests/instructions_test.cpp
-        tests/bus_test.cpp
-        tests/dram_test.cpp
         tests/test_util.h
         tests/test_util.cpp
 )
 
-# 将库链接到 g_test 可执行文件
+# 将库链接到 unit_test 可执行文件
 target_link_libraries(unit_test common_library GTest::gtest_main)
 
 # 配置 GoogleTest

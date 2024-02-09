@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <fstream>
 #include "cup.h"
-#include "exception.h"
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {

@@ -7,7 +7,6 @@
 #include <iomanip> // 用于格式化输出
 #include <optional>
 #include "cup.h"
-#include "exception.h"
 #include "instructions.h"
 
 namespace crvemu {

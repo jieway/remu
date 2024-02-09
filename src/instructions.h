@@ -11,10 +11,12 @@
 #include "cup.h"
 
 namespace crvemu {
+
 class InstructionExecutor {
 public:
   static std::optional<uint64_t> execute(Cpu& cpu, uint32_t inst);
 };
+
 }
 
 #endif

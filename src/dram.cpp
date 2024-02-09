@@ -1,7 +1,6 @@
 // Dram.cpp
 #include <stdexcept>
 #include "dram.h"
-#include "exception.h"
 #include "param.h"
 
 namespace crvemu {
@@ -13,15 +12,11 @@ Dram::Dram(const std::vector<uint8_t>& code) {
 
 std::optional<uint64_t> Dram::load(uint64_t addr, uint64_t size) {
   if (size != 8 && size != 16 && size != 32 && size != 64) {
-    Exception ex(Exception::Type::LoadAccessFault, addr);
-    // ex.printException(ex.getType(), ex.getValue());
     return std::nullopt;
   }
   uint64_t nbytes = size / 8;
   std::size_t index = (addr - DRAM_BASE);
   if (index + nbytes > dram.size()) {
-    Exception ex(Exception::Type::LoadAccessFault, addr);
-    // ex.printException(ex.getType(), ex.getValue());
     return std::nullopt;
   }
 

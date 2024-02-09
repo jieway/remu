@@ -1,6 +1,5 @@
 // Bus.cpp
 #include <string>
-#include "exception.h"
 #include "bus.h"
 #include "param.h"
 
