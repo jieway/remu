@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.27)
 project(crvemu)
 
+# 设置C++标准为C++20
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fconcepts")
 
 # 公共部分
 set(COMMON_SOURCES
@@ -14,9 +16,9 @@ set(COMMON_SOURCES
         src/cup.cpp
         src/instructions.h
         src/instructions.cpp
+        src/log.h
 )
 
-# 库
 add_library(common_library ${COMMON_SOURCES})
 
 # 可执行文件
@@ -43,4 +45,3 @@ target_link_libraries(unit_test common_library GTest::gtest_main)
 # 配置 GoogleTest
 include(GoogleTest)
 gtest_discover_tests(unit_test)
-

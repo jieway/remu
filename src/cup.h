@@ -10,9 +10,9 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <optional>
 #include "param.h"
 #include "bus.h"
-#include <optional>
 
 namespace crvemu {
 class Cpu {

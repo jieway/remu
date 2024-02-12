@@ -3,17 +3,17 @@
 #include <cstdint>
 #include <fstream>
 #include "cup.h"
+#include "log.h"
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
-    std::cout << "Usage:\n"
-              << "- ./program_name <filename>\n";
+    LOG(ERROR, "Usage:\n- ./program_name <filename>");
     return 0;
   }
 
   std::ifstream file(argv[1], std::ios::binary);
   if (!file) {
-    std::cerr << "Cannot open file: " << argv[1] << std::endl;
+    LOG(ERROR, "Cannot open file: ", argv[1]);
     return 1;
   }
 
@@ -22,16 +22,17 @@ int main(int argc, char* argv[]) {
 
   while (true) {
     auto inst = cpu.fetch();
-    if (inst.has_value()) {
-      auto new_pc = cpu.execute(inst.value());
-      if (new_pc.has_value()) {
-        cpu.pc = new_pc.value();
-      } else {
-        break;
-      }
-    } else {
+    if (!inst.has_value()) {
+      LOG(INFO, "End of program reached.");
       break;
     }
+    auto new_pc = cpu.execute(inst.value());
+    if (!new_pc.has_value()) {
+      LOG(ERROR, "Execution of instruction failed.");
+      break;
+    }
+
+    cpu.pc = new_pc.value();
   }
   // 使用cpu对象进行操作
   cpu.dump_registers(); // 打印寄存器状态

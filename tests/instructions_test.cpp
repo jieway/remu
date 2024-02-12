@@ -6,6 +6,7 @@
 #include "test_util.h"
 
 namespace crvemu {
+
     // Test addi instruction
     TEST(RVTests, TestAddi) {
       {
