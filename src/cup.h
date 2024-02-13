@@ -10,9 +10,9 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <optional>
 #include "param.h"
 #include "bus.h"
-#include <optional>
 
 namespace crvemu {
 class Cpu {
@@ -51,6 +51,7 @@ public:
 
   void dump_pc() const;
 
+  uint64_t getRegValueByName(const std::string& regName);
 private:
   const std::array<std::string, 32> RVABI; // RISC-V 寄存器名称
 };
