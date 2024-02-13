@@ -47,17 +47,121 @@ std::optional<uint64_t> executeFence(Cpu& cpu, uint32_t inst) {
 
 std::optional<uint64_t> executeLb(Cpu& cpu, uint32_t inst) {
   auto [rd, rs1, rs2] = unpackInstruction(inst);
-  uint64_t imm = (static_cast<int32_t>(inst) >> 20) & 0xFFF;
-  uint64_t addr = cpu.regs[rs1] + imm;
+  auto immediate = static_cast<int64_t>(static_cast<int32_t>(inst & 0xfff00000) >> 20);
+  uint64_t addr = cpu.regs[rs1] + immediate;
+
+  LOG(INFO, "LB: x", rd, " = MEM[x", rs1, " + ", immediate, "]");
   auto val = cpu.load(addr, 8);
-  LOG(INFO, "Lb: x", rd, " = x", rs1, " + ", imm, " val: ", (val.has_value() ? val.value() : 0));
+  if (val.has_value()) {
+    cpu.regs[rd] = static_cast<uint64_t>(static_cast<int8_t>(val.value() & 0xff));  // Sign extend
+    return cpu.update_pc();
+  }
+
+  LOG(ERROR, "LB FAIL!");
+  return std::nullopt;
+}
+
+std::optional<uint64_t> executeLh(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto immediate = static_cast<int64_t>(static_cast<int32_t>(inst & 0xfff00000) >> 20);
+  uint64_t addr = cpu.regs[rs1] + immediate;
+
+  LOG(INFO, "LH: x", rd, " = MEM[x", rs1, " + ", immediate, "]");
+  auto val = cpu.load(addr, 16);
+  if (val.has_value()) {
+    cpu.regs[rd] = static_cast<uint64_t>(static_cast<int16_t>(val.value() & 0xffff));  // Sign extend
+    return cpu.update_pc();
+  }
+
+  LOG(ERROR, "LH FAIL!");
+  return std::nullopt;
+}
+
+std::optional<uint64_t> executeLw(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto immediate = static_cast<int64_t>(static_cast<int32_t>(inst & 0xfff00000) >> 20);
+  uint64_t addr = cpu.regs[rs1] + immediate;
+
+  LOG(INFO, "LW: x", rd, " = MEM[x", rs1, " + ", immediate, "]");
+  auto val = cpu.load(addr, 32);
+  if (val.has_value()) {
+    cpu.regs[rd] = static_cast<uint64_t>(static_cast<int32_t>(val.value() & 0xffffffff));  // Sign extend
+    return cpu.update_pc();
+  }
+
+  LOG(ERROR, "LW FAIL!");
+  return std::nullopt;
+}
+
+std::optional<uint64_t> executeLd(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto immediate = static_cast<int64_t>(static_cast<int32_t>(inst & 0xfff00000) >> 20);
+  uint64_t addr = cpu.regs[rs1] + immediate;
+
+  LOG(INFO, "LD: x", rd, " = MEM[x", rs1, " + ", immediate, "]");
+  auto val = cpu.load(addr, 64);
   if (val.has_value()) {
     cpu.regs[rd] = val.value();
-  } else {
-    return std::nullopt;
+    return cpu.update_pc();
   }
-  return cpu.update_pc();
+
+  LOG(ERROR, "LD FAIL!");
+  return std::nullopt;
 }
+
+std::optional<uint64_t> executeLbu(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto immediate = static_cast<int64_t>(static_cast<int32_t>(inst & 0xfff00000) >> 20);
+  uint64_t addr = cpu.regs[rs1] + immediate;
+
+  LOG(INFO, "LBU: x", rd, " = MEM[x", rs1, " + ", immediate, "]");
+  auto val = cpu.load(addr, 8);
+  if (val.has_value()) {
+    cpu.regs[rd] = val.value() & 0xff;  // Zero extend
+    return cpu.update_pc();
+  }
+
+  LOG(ERROR, "LBU FAIL!");
+  return std::nullopt;
+}
+
+
+std::optional<uint64_t> executeLhu(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto immediate = static_cast<int64_t>(static_cast<int32_t>(inst & 0xfff00000) >> 20);
+  uint64_t addr = cpu.regs[rs1] + immediate;
+
+  LOG(INFO, "LHU: x", rd, " = MEM[x", rs1, " + ", immediate, "]");
+  auto val = cpu.load(addr, 16);
+  if (val.has_value()) {
+    cpu.regs[rd] = val.value() & 0xffff;  // Zero extend
+    return cpu.update_pc();
+  }
+
+  LOG(ERROR, "LHU FAIL!");
+  return std::nullopt;
+}
+
+
+std::optional<uint64_t> executeLwu(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto immediate = static_cast<int64_t>(static_cast<int32_t>(inst & 0xfff00000) >> 20);
+  uint64_t addr = cpu.regs[rs1] + immediate;
+
+  LOG(INFO, "LWU: x", rd, " = MEM[x", rs1, " + ", immediate, "]");
+  auto val = cpu.load(addr, 32);
+  if (val.has_value()) {
+    cpu.regs[rd] = val.value() & 0xffffffff;  // Zero extend
+    return cpu.update_pc();
+  }
+
+  LOG(ERROR, "LWU FAIL!");
+  return std::nullopt;
+}
+
+
+
+
 
 std::optional<uint64_t> executeSb(Cpu& cpu, uint32_t inst) {
   auto [rd, rs1, rs2] = unpackInstruction(inst);
@@ -485,6 +589,12 @@ std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
 
   std::unordered_map<std::tuple<uint32_t, uint32_t>, ExecuteFunction> instructionMap = {
     {std::make_tuple(0x03, 0x0), executeLb},
+    {std::make_tuple(0x03, 0x1), executeLh},
+    {std::make_tuple(0x03, 0x2), executeLw},
+    {std::make_tuple(0x03, 0x3), executeLd},
+    {std::make_tuple(0x03, 0x4), executeLbu},
+    {std::make_tuple(0x03, 0x5), executeLhu},
+    {std::make_tuple(0x03, 0x6), executeLwu},
     {std::make_tuple(0x0f, 0x0), executeFence},
     {std::make_tuple(0x13, 0x0), executeAddi},
     {std::make_tuple(0x13, 0x1), executeSlli},

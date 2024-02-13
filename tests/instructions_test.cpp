@@ -213,16 +213,6 @@ TEST(RVTests, TestFENCE) {
 //       << "Error: a0 should be 42 after LB instruction";
 // }
 
-// TEST(RVTests, TestBEQ2) {
-//   std::string code = start +
-//       "addi x1, x0, 10\n"
-//       "addi x2, x0, 20\n"
-//       "beq x1, x2, 42\n";
-//   Cpu cpu = rv_helper(code, "test_beq", 3);
-//   EXPECT_EQ(cpu.pc, DRAM_BASE + 42 + 4)
-//       << "Error: pc should be the target address after BEQ instruction";
-// }
-
 // TEST(RVTests, TestBEQ) {
 //   std::string code = start +
 //       "beq x0, x0, 42\n";
@@ -241,7 +231,6 @@ TEST(RVTests, TestFENCE) {
 //       EXPECT_EQ(cpu.pc, DRAM_BASE + 42 + 4)
 //           << "Error: pc should be the target address after BNE instruction";
 // }
-
 
 // TEST(RVTests, TestBLT) {
 //       std::string code = start +
