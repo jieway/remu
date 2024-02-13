@@ -14,16 +14,16 @@ namespace crvemu {
 std::optional<uint64_t> Cpu::load(uint64_t addr, uint64_t size) {
   auto val = bus.load(addr, size);
   if (val.has_value()) {
-    LOG(INFO, "Load successful. Value: ", val.value());
+    LOG(INFO, "Load successful. Value: ", std::hex, val.value());
     return val;
   }
 
-  LOG(ERROR, "Load failed. Invalid address: ", addr);
+  LOG(ERROR, "Load failed. Invalid address: ", std::hex, addr);
   return std::nullopt;
 }
 
 bool Cpu::store(uint64_t addr, uint64_t size, uint64_t value) {
-  LOG(INFO, "Storing value ", value, " at address ", addr, " with size ", size, " bytes.");
+  LOG(INFO, "Storing value ", value, " at address ", std::hex, addr, " with size ", size, " bytes.");
 
   // Assuming bus.store returns a boolean indicating success
   bool result = bus.store(addr, size, value);
@@ -43,14 +43,14 @@ std::optional<uint32_t> Cpu::fetch() {
     LOG(INFO, "Instruction fetched: ", std::hex, inst.value(), std::dec);
     return inst.value();
   }
-  LOG(ERROR, "Fetch failed. Invalid PC: ", pc);
+  LOG(ERROR, "Fetch failed. Invalid PC: ", std::hex, pc);
   return std::nullopt;
 }
 
 std::optional<uint64_t>  Cpu::execute(uint32_t inst) {
   auto exe = InstructionExecutor::execute(*this, inst);
   if (exe.has_value()) {
-    LOG(INFO, "Execution successful. Result: ", exe.value());
+    LOG(INFO, "Execution successful. Result: ", std::hex, exe.value());
     return exe;
   }
   LOG(ERROR, "Execution failed.");
@@ -74,4 +74,16 @@ void Cpu::dump_pc() const {
   LOG(INFO, "Dumping PC register state:");
   LOG(INFO, "PC = 0x", std::hex, pc, std::dec);
 }
+
+
+uint64_t Cpu::getRegValueByName(const std::string& regName) {
+  auto it = std::find(RVABI.begin(), RVABI.end(), regName);
+  if (it != RVABI.end()) {
+    int index = std::distance(RVABI.begin(), it);
+    return regs[index];
+  } else {
+    throw std::invalid_argument("Invalid register name: " + regName);
+  }
+}
+
 }

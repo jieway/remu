@@ -5,6 +5,7 @@
 #include "log.h"
 
 namespace crvemu {
+
 Dram::Dram(const std::vector<uint8_t>& code) {
   dram.resize(DRAM_SIZE, 0); // Initialize DRAM with 0s
   // Copy code into dram
@@ -19,7 +20,7 @@ std::optional<uint64_t> Dram::load(uint64_t addr, uint64_t size) {
   uint64_t nbytes = size / 8;
   std::size_t index = (addr - DRAM_BASE);
   if (index + nbytes > dram.size()) {
-    LOG(ERROR, "Invalid address range for load operation at DRAM address ", addr);
+    LOG(ERROR, "Invalid address range for load operation at DRAM address ", std::hex, addr);
     return std::nullopt;
   }
 
@@ -41,7 +42,7 @@ bool Dram::store(uint64_t addr, uint64_t size, uint64_t value) {
   uint64_t nbytes = size / 8;
   std::size_t index = (addr - DRAM_BASE);
   if (index + nbytes > dram.size()) {
-    LOG(ERROR, "Invalid address range for store operation at DRAM address ", addr);
+    LOG(ERROR, "Invalid address range for store operation at DRAM address ", std::hex, addr);
     return false;
   }
 
@@ -49,7 +50,7 @@ bool Dram::store(uint64_t addr, uint64_t size, uint64_t value) {
     dram[index + i] = (value >> (i * 8)) & 0xFF;
   }
 
-  LOG(INFO, "DRAM store successful. Value: ", value, " at address ", addr, " with size ", size, " bytes.");
+  LOG(INFO, "DRAM store successful. Value: ", value, " at address ", std::hex, addr, " with size ", size, " bytes.");
   return true;
 }
 
