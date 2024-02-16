@@ -18,7 +18,7 @@ std::optional<uint64_t> Cpu::load(uint64_t addr, uint64_t size) {
     return val;
   }
 
-  LOG(ERROR, "Load failed. Invalid address: ", std::hex, addr);
+  LOG(WARNING, "Load failed. Invalid address: ", std::hex, addr);
   return std::nullopt;
 }
 
@@ -31,7 +31,7 @@ bool Cpu::store(uint64_t addr, uint64_t size, uint64_t value) {
   if (result) {
     LOG(INFO, "Store successful.");
   } else {
-    LOG(ERROR, "Store failed.");
+    LOG(WARNING, "Store failed.");
   }
 
   return result;
@@ -43,7 +43,7 @@ std::optional<uint32_t> Cpu::fetch() {
     LOG(INFO, "Instruction fetched: ", std::hex, inst.value(), std::dec);
     return inst.value();
   }
-  LOG(ERROR, "Fetch failed. Invalid PC: ", std::hex, pc);
+  LOG(WARNING, "Fetch failed. Invalid PC: ", std::hex, pc);
   return std::nullopt;
 }
 
@@ -53,7 +53,7 @@ std::optional<uint64_t>  Cpu::execute(uint32_t inst) {
     LOG(INFO, "Execution successful. Result: ", std::hex, exe.value());
     return exe;
   }
-  LOG(ERROR, "Execution failed.");
+  LOG(WARNING, "Execution failed.");
   return std::nullopt;
 }
 
@@ -75,15 +75,55 @@ void Cpu::dump_pc() const {
   LOG(INFO, "PC = 0x", std::hex, pc, std::dec);
 }
 
-
-uint64_t Cpu::getRegValueByName(const std::string& regName) {
-  auto it = std::find(RVABI.begin(), RVABI.end(), regName);
+std::optional<uint64_t> Cpu::getRegValueByName(const std::string& name) {
+  // 尝试在寄存器中查找
+  auto it = std::find(RVABI.begin(), RVABI.end(), name);
   if (it != RVABI.end()) {
     int index = std::distance(RVABI.begin(), it);
     return regs[index];
-  } else {
-    throw std::invalid_argument("Invalid register name: " + regName);
   }
-}
 
+  // 尝试在CSR寄存器中查找
+  if (name == "mhartid") {
+    return csr.load(MHARTID);
+  } else if (name == "mstatus") {
+    return csr.load(MSTATUS);
+  } else if (name == "mtvec") {
+    return csr.load(MTVEC);
+  } else if (name == "mepc") {
+    return csr.load(MEPC);
+  } else if (name == "mcause") {
+    return csr.load(MCAUSE);
+  } else if (name == "mtval") {
+    return csr.load(MTVAL);
+  } else if (name == "medeleg") {
+    return csr.load(MEDELEG);
+  } else if (name == "mscratch") {
+    return csr.load(MSCRATCH);
+  } else if (name == "MIP") {
+    return csr.load(MIP);
+  } else if (name == "mcounteren") {
+    return csr.load(MCOUNTEREN);
+  } else if (name == "sstatus") {
+    return csr.load(SSTATUS);
+  } else if (name == "stvec") {
+    return csr.load(STVEC);
+  } else if (name == "sepc") {
+    return csr.load(SEPC);
+  } else if (name == "scause") {
+    return csr.load(SCAUSE);
+  } else if (name == "stval") {
+    return csr.load(STVAL);
+  } else if (name == "sscratch") {
+    return csr.load(SSCRATCH);
+  } else if (name == "SIP") {
+    return csr.load(SIP);
+  } else if (name == "SATP") {
+    return csr.load(SATP);
+  }
+
+  // 如果在寄存器和CSR寄存器中都找不到，返回std::nullopt
+  LOG(WARNING, "Invalid name: ", name);
+  return std::nullopt;
+}
 }

@@ -13,7 +13,7 @@ std::optional<uint64_t> Bus::load(uint64_t addr, uint64_t size) {
     LOG(INFO, "Bus loading from DRAM address ", std::hex, addr, " with size ", size, " bytes.");
     return dram.load(addr, size);
   }
-  LOG(ERROR, "Invalid address for load operation: ", std::hex, addr, ". Valid address range is [", DRAM_BASE, ", ", DRAM_END, "]");
+  LOG(WARNING, "Invalid address for load operation: ", std::hex, addr, ". Valid address range is [", DRAM_BASE, ", ", DRAM_END, "]");
   return std::nullopt;
 }
 
@@ -22,7 +22,7 @@ bool Bus::store(uint64_t addr, uint64_t size, uint64_t value) {
     LOG(INFO, "Bus storing value ", std::hex, value, " at DRAM address ", addr, " with size ", size, " bytes.");
     return dram.store(addr, size, value);
   } else {
-    LOG(ERROR, "Invalid address for store operation: ", std::hex, addr, ". Valid address range is [", DRAM_BASE, ", ", DRAM_END, "]");
+    LOG(WARNING, "Invalid address for store operation: ", std::hex, addr, ". Valid address range is [", DRAM_BASE, ", ", DRAM_END, "]");
     return false;
   }
 }

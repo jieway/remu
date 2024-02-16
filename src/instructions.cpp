@@ -475,6 +475,112 @@ std::optional<uint64_t> executeBEQ(Cpu& cpu, uint32_t inst) {
   return std::nullopt;
 }
 
+std::optional<uint64_t> executeCSR_RW(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto csr_addr = (inst & 0xfff00000) >> 20;
+
+  // Load the value from the CSR register
+  uint64_t t = cpu.csr.load(csr_addr);
+
+  // Store the value from the rs1 register into the CSR register
+  cpu.csr.store(csr_addr, cpu.regs[rs1]);
+
+  // Store the original CSR value into the rd register
+  cpu.regs[rd] = t;
+
+  // Update the program counter
+  return cpu.update_pc();
+}
+
+std::optional<uint64_t> executeCSR_RS(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto csr_addr = (inst & 0xfff00000) >> 20;
+
+  // Load the value from the CSR register
+  uint64_t t = cpu.csr.load(csr_addr);
+
+  // Store the original CSR value into the rd register
+  cpu.regs[rd] = t;
+
+  // Perform bitwise OR operation between the CSR register value and the rs1 register value
+  // and store the result back into the CSR register
+  cpu.csr.store(csr_addr, t | cpu.regs[rs1]);
+
+  // Update the program counter
+  return cpu.update_pc();
+}
+
+std::optional<uint64_t> executeCSR_RC(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto csr_addr = (inst & 0xfff00000) >> 20;
+
+  // Load the value from the CSR register
+  uint64_t t = cpu.csr.load(csr_addr);
+
+  // Store the original CSR value into the rd register
+  cpu.regs[rd] = t;
+
+  // Perform bitwise AND operation between the CSR register value and the bitwise NOT of the rs1 register value
+  // and store the result back into the CSR register
+  cpu.csr.store(csr_addr, t & ~cpu.regs[rs1]);
+
+  // Update the program counter
+  return cpu.update_pc();
+}
+
+std::optional<uint64_t> executeCSR_RWI(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto csr_addr = (inst & 0xfff00000) >> 20;
+
+  // Load the value from the CSR register
+  uint64_t t = cpu.csr.load(csr_addr);
+
+  // Store the original CSR value into the rd register
+  cpu.regs[rd] = t;
+
+  // Set the CSR register value to the immediate value
+  cpu.csr.store(csr_addr, rs1);
+
+  // Update the program counter
+  return cpu.update_pc();
+}
+
+std::optional<uint64_t> executeCSR_RSI(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto csr_addr = (inst & 0xfff00000) >> 20;
+
+  // Load the value from the CSR register
+  uint64_t t = cpu.csr.load(csr_addr);
+
+  // Store the original CSR value into the rd register
+  cpu.regs[rd] = t;
+
+  // Perform bitwise OR operation between the CSR register value and the immediate value
+  // and store the result back into the CSR register
+  cpu.csr.store(csr_addr, t | (1 << rs1));
+
+  // Update the program counter
+  return cpu.update_pc();
+}
+
+std::optional<uint64_t> executeCSR_RCI(Cpu& cpu, uint32_t inst) {
+  auto [rd, rs1, rs2] = unpackInstruction(inst);
+  auto csr_addr = (inst & 0xfff00000) >> 20;
+
+  // Load the value from the CSR register
+  uint64_t t = cpu.csr.load(csr_addr);
+
+  // Store the original CSR value into the rd register
+  cpu.regs[rd] = t;
+
+  // Perform bitwise AND operation between the CSR register value and the bitwise NOT of the immediate value
+  // and store the result back into the CSR register
+  cpu.csr.store(csr_addr, t & ~rs1);
+
+  // Update the program counter
+  return cpu.update_pc();
+}
+
 std::optional<uint64_t> executeBNE(Cpu& cpu, uint32_t inst) {
     auto [rd, rs1, rs2] = unpackInstruction(inst);
     auto imm = static_cast<int64_t>((((inst & 0x80000000) ? 0xFFF00000 : 0) |
@@ -607,6 +713,12 @@ std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
     {std::make_tuple(0x23, 0x0), executeStoreByte},
     {std::make_tuple(0x23, 0x3), executeStoreDouble},
     {std::make_tuple(0x63, 0x1), executeBEQ},
+    {std::make_tuple(0x73, 0x1), executeCSR_RW},
+    {std::make_tuple(0x73, 0x2), executeCSR_RS},
+    {std::make_tuple(0x73, 0x3), executeCSR_RC},
+    {std::make_tuple(0x73, 0x5), executeCSR_RWI},
+    {std::make_tuple(0x73, 0x6), executeCSR_RSI},
+    {std::make_tuple(0x73, 0x7), executeCSR_RCI},
   };
 
   auto it = instructionMap.find({opcode, funct3});
@@ -630,11 +742,10 @@ std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
     {std::make_tuple(0x33, 0x2, 0x00), executeSlt},
     {std::make_tuple(0x33, 0x4, 0x00), executeXor},
     {std::make_tuple(0x33, 0x5, 0x00), executeSrl},
-      {std::make_tuple(0x33, 0x5, 0x20), executeSra},
+    {std::make_tuple(0x33, 0x5, 0x20), executeSra},
     {std::make_tuple(0x33, 0x6, 0x00), executeOr},
     {std::make_tuple(0x33, 0x7, 0x00), executeAnd},
     {std::make_tuple(0x3b, 0x0, 0x00), executeAddw},
-
   };
 
   auto it1 = instruction2Map.find({opcode, funct3, funct7});

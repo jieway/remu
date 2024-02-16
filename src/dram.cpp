@@ -14,13 +14,13 @@ Dram::Dram(const std::vector<uint8_t>& code) {
 
 std::optional<uint64_t> Dram::load(uint64_t addr, uint64_t size) {
   if (size != 8 && size != 16 && size != 32 && size != 64) {
-    LOG(ERROR, "Invalid size for load operation: ", size, " bytes.");
+    LOG(WARNING, "Invalid size for load operation: ", size, " bytes.");
     return std::nullopt;
   }
   uint64_t nbytes = size / 8;
   std::size_t index = (addr - DRAM_BASE);
   if (index + nbytes > dram.size()) {
-    LOG(ERROR, "Invalid address range for load operation at DRAM address ", std::hex, addr);
+    LOG(WARNING, "Invalid address range for load operation at DRAM address ", std::hex, addr);
     return std::nullopt;
   }
 
@@ -35,7 +35,7 @@ std::optional<uint64_t> Dram::load(uint64_t addr, uint64_t size) {
 
 bool Dram::store(uint64_t addr, uint64_t size, uint64_t value) {
   if (size != 8 && size != 16 && size != 32 && size != 64) {
-    LOG(ERROR, "Invalid size for store operation: ", size, " bytes.");
+    LOG(WARNING, "Invalid size for store operation: ", size, " bytes.");
     return false;
   }
 

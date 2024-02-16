@@ -5,6 +5,14 @@
 #include "cup.h"
 #include "log.h"
 
+#define SQUARE_DO_WHILE(x) do { printf("Calculating square... "); x * x; } while(0);
+
+#define SQUARE_BRACES(x) { printf("Calculating square... "); x * x; }
+
+void some_function() {
+  std::cout << "sss" << std::endl;
+}
+
 int main(int argc, char* argv[]) {
   if (argc != 2) {
     LOG(ERROR, "Usage:\n- ./program_name <filename>");

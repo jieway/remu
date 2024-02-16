@@ -17,6 +17,8 @@ set(COMMON_SOURCES
         src/instructions.h
         src/instructions.cpp
         src/log.h
+        src/csr.h
+        src/csr.cpp
 )
 
 add_library(common_library ${COMMON_SOURCES})
@@ -34,9 +36,13 @@ enable_testing()
 add_subdirectory("third_party/googletest")
 
 add_executable(unit_test
-        tests/instructions_test.cpp
+        tests/unitest/instructions_test.cpp
         tests/test_util.h
         tests/test_util.cpp
+        tests/unitest/dram_test.cpp
+        tests/unitest/bus_test.cpp
+        tests/unitest/cpu_test.cpp
+        tests/unitest/csr_test.cpp
 )
 
 # 将库链接到 unit_test 可执行文件
