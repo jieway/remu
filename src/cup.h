@@ -27,6 +27,7 @@ public:
   std::array<uint64_t, 32> regs{};
 
   Bus bus;
+  Mode mode;
 
   // 控制和状态寄存器。RISC-V ISA为最多4096个CSR预留了一个12位的编码空间（csr[11:0]）。
   Csr csr;
@@ -38,6 +39,7 @@ public:
   {
       regs.fill(0); // 初始化寄存器为0
       regs[2] = DRAM_END; // 设置堆栈指针寄存器的初始值
+      mode = Machine;
   }
 
   std::optional<uint64_t> load(uint64_t addr, uint64_t size);

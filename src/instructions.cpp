@@ -581,6 +581,80 @@ std::optional<uint64_t> executeCSR_RCI(Cpu& cpu, uint32_t inst) {
   return cpu.update_pc();
 }
 
+std::optional<uint64_t> executeSFENCE_VMA(Cpu& cpu, uint32_t inst) {
+  // 在这里，模拟器没有实现虚拟内存或者页表，
+  // 所以这个指令不需要执行任何操作。
+  // 如果你的模拟器实现了虚拟内存或者页表，你需要在这里添加适当的代码来刷新TLB。
+
+  // 更新程序计数器
+  return cpu.update_pc();
+}
+
+std::optional<uint64_t> executeSRET(Cpu& cpu, uint32_t inst) {
+  // 从 CSR 寄存器加载 sstatus 的值
+  uint64_t sstatus = cpu.csr.load(SSTATUS);
+
+  // 根据 SPP 位设置权限级别，SPP 位是 sstatus 的第 8 位
+  cpu.mode = (sstatus & MASK_SPP) >> 8;
+
+  // SPIE 位是 sstatus 的第 5 位
+  uint64_t spie = (sstatus & MASK_SPIE) >> 5;
+
+  // 将 SIE 位设置为 SPIE 位的值，SIE 位是 sstatus 的第 1 位
+  sstatus = (sstatus & ~MASK_SIE) | (spie << 1);
+
+  // 将 SPIE 位设置为 1
+  sstatus |= MASK_SPIE;
+
+  // 将 SPP 位设置为最低权限模式（U-mode）
+  sstatus &= ~MASK_SPP;
+
+  // 将修改后的 sstatus 值存回 sstatus 寄存器
+  cpu.csr.store(SSTATUS, sstatus);
+
+  // 将程序计数器（PC）设置为 sepc 寄存器的值
+  // 当 IALIGN=32 时，sepc[1] 位在读取时被屏蔽，使其看起来像是 0。这种屏蔽也发生在 SRET 指令的隐式读取中
+  uint64_t new_pc = cpu.csr.load(SEPC) & ~0b11;
+
+  // 返回新的程序计数器（PC）的值
+  return new_pc;
+}
+
+std::optional<uint64_t> executeMRET(Cpu& cpu, uint32_t inst) {
+  // Load the value of the mstatus register from the CSR
+  uint64_t mstatus = cpu.csr.load(MSTATUS);
+
+  // Set the privilege level based on the MPP bit, which is the 11th and 12th bits of mstatus
+  cpu.mode = (mstatus & MASK_MPP) >> 11;
+
+  // The MPIE bit is the 7th bit of mstatus
+  uint64_t mpie = (mstatus & MASK_MPIE) >> 7;
+
+  // Set the MIE bit to the value of the MPIE bit, the MIE bit is the 3rd bit of mstatus
+  mstatus = (mstatus & ~MASK_MIE) | (mpie << 3);
+
+  // Set the MPIE bit to 1
+  mstatus |= MASK_MPIE;
+
+  // Set the MPP bit to the least privilege mode (U-mode)
+  mstatus &= ~MASK_MPP;
+
+  // If MPP is not equal to M, set the MPRV bit to 0
+  if ((mstatus & MASK_MPP) != Machine) {
+    mstatus &= ~MASK_MPRV;
+  }
+
+  // Store the modified mstatus value back to the mstatus register
+  cpu.csr.store(MSTATUS, mstatus);
+
+  // Set the program counter (PC) to the value of the mepc register
+  // When IALIGN=32, the mepc[1] bit is masked when read, making it look like 0. This masking also occurs in the implicit read of the MRET instruction
+  uint64_t new_pc = cpu.csr.load(MEPC) & ~0b11;
+
+  // Return the new value of the program counter (PC)
+  return new_pc;
+}
+
 std::optional<uint64_t> executeBNE(Cpu& cpu, uint32_t inst) {
     auto [rd, rs1, rs2] = unpackInstruction(inst);
     auto imm = static_cast<int64_t>((((inst & 0x80000000) ? 0xFFF00000 : 0) |
@@ -746,6 +820,9 @@ std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
     {std::make_tuple(0x33, 0x6, 0x00), executeOr},
     {std::make_tuple(0x33, 0x7, 0x00), executeAnd},
     {std::make_tuple(0x3b, 0x0, 0x00), executeAddw},
+    {std::make_tuple(0x73, 0x0, 0x9), executeSFENCE_VMA},
+    {std::make_tuple(0x73, 0x0, 0x8), executeSRET},
+    {std::make_tuple(0x73, 0x0, 0x18), executeMRET},
   };
 
   auto it1 = instruction2Map.find({opcode, funct3, funct7});
