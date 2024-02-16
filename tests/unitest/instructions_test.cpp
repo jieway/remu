@@ -2,8 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-#include "../src/cup.h"
-#include "test_util.h"
+#include "../../src/cup.h"
+#include "../test_util.h"
 
 namespace crvemu {
 
@@ -156,7 +156,7 @@ TEST(RVTests, TestLui) {
   Cpu cpu = rv_helper(code, "test_lui", 1);
 
   // Verify if x1 has the correct value
-  EXPECT_EQ(cpu.getRegValueByName("a0"), 42 << 12) << "Error: a0 should be the result of LUI instruction";
+  EXPECT_EQ(cpu.getRegValueByName("a0").value(), 42 << 12) << "Error: a0 should be the result of LUI instruction";
 }
 
 TEST(RVTests, TestAUIPC) {
@@ -164,14 +164,14 @@ TEST(RVTests, TestAUIPC) {
       "auipc a0, 42 \n";      // Load 15 into x2
   Cpu cpu = rv_helper(code, "test_auipc", 1);
 
-  EXPECT_EQ(cpu.getRegValueByName("a0"), DRAM_BASE + (42 << 12)) << "Error: a0 should be the result of AUIPC instruction";
+  EXPECT_EQ(cpu.getRegValueByName("a0").value(), DRAM_BASE + (42 << 12)) << "Error: a0 should be the result of AUIPC instruction";
 }
 
 TEST(RVTests, TestJAL) {
   std::string code = start +
     "jal a0, 42\n";
   Cpu cpu = rv_helper(code, "test_jal", 1);
-  EXPECT_EQ(cpu.getRegValueByName("a0"), DRAM_BASE + 4)
+  EXPECT_EQ(cpu.getRegValueByName("a0").value(), DRAM_BASE + 4)
       << "Error: a0 should be the result of JAL instruction";
   EXPECT_EQ(cpu.pc, DRAM_BASE + 42)
       << "Error: pc should be the target address after JAL instruction";
@@ -183,7 +183,7 @@ TEST(RVTests, TestJALR) {
     "jalr a0, -8(a1)\n";
   Cpu cpu = rv_helper(code, "test_jalr", 2);
 
-  EXPECT_EQ(cpu.getRegValueByName("a0"), DRAM_BASE + 8)
+  EXPECT_EQ(cpu.getRegValueByName("a0").value(), DRAM_BASE + 8)
       << "Error: a0 should be the result of JALR instruction";
   EXPECT_EQ(cpu.pc, 34)
       << "Error: pc should be 34 after JALR instruction";
@@ -306,9 +306,9 @@ TEST(RVTests, TestSlt) {
   Cpu cpu = rv_helper(code, "test_slt", 5);
 
   // Verify if a2, a3, and a4 have the correct values
-  EXPECT_EQ(cpu.getRegValueByName("a2"), 1) << "Error: a2 should be 1";
-  EXPECT_EQ(cpu.getRegValueByName("a3"), 1) << "Error: a3 should be 1";
-  EXPECT_EQ(cpu.getRegValueByName("a4"), 1) << "Error: a4 should be 1";
+  EXPECT_EQ(cpu.getRegValueByName("a2").value(), 1) << "Error: a2 should be 1";
+  EXPECT_EQ(cpu.getRegValueByName("a3").value(), 1) << "Error: a3 should be 1";
+  EXPECT_EQ(cpu.getRegValueByName("a4").value(), 1) << "Error: a4 should be 1";
 }
 
 // Test xor, xori, and xor instructions
@@ -321,8 +321,8 @@ TEST(RVTests, TestXor) {
   Cpu cpu = rv_helper(code, "test_xor", 3);
 
   // Verify if a1 and a2 have the correct values
-  EXPECT_EQ(cpu.getRegValueByName("a1"), 3) << "Error: a1 should be 3";
-  EXPECT_EQ(cpu.getRegValueByName("a2"), 0) << "Error: a2 should be 0";
+  EXPECT_EQ(cpu.getRegValueByName("a1").value(), 3) << "Error: a1 should be 3";
+  EXPECT_EQ(cpu.getRegValueByName("a2").value(), 0) << "Error: a2 should be 0";
 }
 
 // Test or, ori, and or instructions
@@ -335,8 +335,8 @@ TEST(RVTests, TestOr) {
   Cpu cpu = rv_helper(code, "test_or", 3);
 
   // Verify if a1 and a2 have the correct values
-  EXPECT_EQ(cpu.getRegValueByName("a1"), 0b11) << "Error: a1 should be 0b11";
-  EXPECT_EQ(cpu.getRegValueByName("a2"), 0b10) << "Error: a2 should be 0b10";
+  EXPECT_EQ(cpu.getRegValueByName("a1").value(), 0b11) << "Error: a1 should be 0b11";
+  EXPECT_EQ(cpu.getRegValueByName("a2").value(), 0b10) << "Error: a2 should be 0b10";
 }
 
 // Test and, andi, and and instructions
@@ -349,8 +349,8 @@ TEST(RVTests, TestAnd) {
   Cpu cpu = rv_helper(code, "test_and", 3);
 
   // Verify if a1 and a2 have the correct values
-  EXPECT_EQ(cpu.getRegValueByName("a1"), 0b10) << "Error: a1 should be 0b10";
-  EXPECT_EQ(cpu.getRegValueByName("a2"), 0b10) << "Error: a2 should be 0b10";
+  EXPECT_EQ(cpu.getRegValueByName("a1").value(), 0b10) << "Error: a1 should be 0b10";
+  EXPECT_EQ(cpu.getRegValueByName("a2").value(), 0b10) << "Error: a2 should be 0b10";
 }
 
 // Test sll, slli instructions
@@ -366,9 +366,9 @@ TEST(RVTests, TestSll) {
   Cpu cpu = rv_helper(code, "test_sll", 6);
 
   // Verify if a2, a3, and a4 have the correct values
-  EXPECT_EQ(cpu.getRegValueByName("a2"), 1 << 5) << "Error: a2 should be 1 << 5";
-  EXPECT_EQ(cpu.getRegValueByName("a3"), 1 << 5) << "Error: a3 should be 1 << 5";
-  EXPECT_EQ(cpu.getRegValueByName("a4"), 1) << "Error: a4 should be 1";
+  EXPECT_EQ(cpu.getRegValueByName("a2").value(), 1 << 5) << "Error: a2 should be 1 << 5";
+  EXPECT_EQ(cpu.getRegValueByName("a3").value(), 1 << 5) << "Error: a3 should be 1 << 5";
+  EXPECT_EQ(cpu.getRegValueByName("a4").value(), 1) << "Error: a4 should be 1";
 }
 
 // Test sra, srai, srli, srl instructions
@@ -384,10 +384,10 @@ TEST(RVTests, TestSraSrl) {
   Cpu cpu = rv_helper(code, "test_sra_srl", 6);
 
   // Verify if a2, a3, a4, and a5 have the correct values
-  EXPECT_EQ(cpu.getRegValueByName("a2"), static_cast<uint64_t>(-4)) << "Error: a2 should be -4 as i64 as u64";
-  EXPECT_EQ(cpu.getRegValueByName("a3"), static_cast<uint64_t>(-2)) << "Error: a3 should be -2 as i64 as u64";
-  EXPECT_EQ(cpu.getRegValueByName("a4"), static_cast<uint64_t>(-8) >> 2) << "Error: a4 should be -8 as i64 as u64 >> 2";
-  EXPECT_EQ(cpu.getRegValueByName("a5"), static_cast<uint64_t>(-8) >> 1) << "Error: a5 should be -8 as i64 as u64 >> 1";
+  EXPECT_EQ(cpu.getRegValueByName("a2").value(), static_cast<uint64_t>(-4)) << "Error: a2 should be -4 as i64 as u64";
+  EXPECT_EQ(cpu.getRegValueByName("a3").value(), static_cast<uint64_t>(-2)) << "Error: a3 should be -2 as i64 as u64";
+  EXPECT_EQ(cpu.getRegValueByName("a4").value(), static_cast<uint64_t>(-8) >> 2) << "Error: a4 should be -8 as i64 as u64 >> 2";
+  EXPECT_EQ(cpu.getRegValueByName("a5").value(), static_cast<uint64_t>(-8) >> 1) << "Error: a5 should be -8 as i64 as u64 >> 1";
 }
 
 // Test addw instruction
@@ -400,7 +400,7 @@ TEST(RVTests, TestWordOp) {
   Cpu cpu = rv_helper(code, "test_word_op", 3);
 
   // Verify if a2 has the correct value
-  EXPECT_EQ(cpu.getRegValueByName("a2"), 0x7f00002a) << "Error: a2 should be 0x7f00002a";
+  EXPECT_EQ(cpu.getRegValueByName("a2").value(), 0x7f00002a) << "Error: a2 should be 0x7f00002a";
 }
 
 // TEST(RVTests, TestSimple) {
@@ -419,5 +419,174 @@ TEST(RVTests, TestWordOp) {
 //   // 验证a0是否具有正确的值
 //   EXPECT_EQ(cpu.regs[10], 42) << "错误：a0应为42";
 // }
+
+// Test csrrw instruction
+TEST(RVTests, TestCsrrw) {
+  {
+    std::string code = start +
+    "addi x2, x0, 5 \n"    // Load 5 into x2
+    "csrrw x1, mstatus, x2 \n";  // x1 = mstatus; mstatus = x2;
+    Cpu cpu = rv_helper(code, "test_csrrw", 2);
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 5) << "Error: mstatus should be 5 after CSRRW instruction";
+  }
+  {
+    std::string code = start +
+    "addi x2, x0, 5 \n"    // Load 5 into x2
+    "addi x3, x0, 10 \n"   // Load 10 into x3
+    "csrrw x1, mstatus, x2 \n"  // x1 = mstatus; mstatus = x2;
+    "csrrw x4, mstatus, x3 \n";  // x4 = mstatus; mstatus = x3;
+    Cpu cpu = rv_helper(code, "test_csrrw_complex", 4);
+
+    // Verify if x1 and x4 have the correct values
+    EXPECT_EQ(cpu.regs[1], 0) << "Error: x1 should be the original value of MSTATUS register after first CSRRW instruction";
+    EXPECT_EQ(cpu.regs[4], 5) << "Error: x4 should be 5 after second CSRRW instruction";
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 10) << "Error: MSTATUS should be 10 after second CSRRW instruction";
+  }
+}
+
+// Test csrrs instruction
+TEST(RVTests, TestCsrrs) {
+  std::string code = start +
+      "addi x2, x0, 5 \n"    // Load 5 into x2
+      "csrrs x1, mstatus, x2 \n";  // x1 = mstatus; mstatus = mstatus | x2;
+  Cpu cpu = rv_helper(code, "test_csrrs", 2);
+
+  // Verify if MSTATUS register has the correct value
+  EXPECT_EQ(cpu.getRegValueByName("mstatus"), 5) << "Error: mstatus should be 5 after CSRRS instruction";
+}
+
+// Test csrrc instruction
+TEST(RVTests, TestCsrrc) {
+  {
+    std::string code = start +
+    "addi x2, x0, 5 \n"    // Load 5 into x2
+    "csrrc x1, mstatus, x2 \n";  // x1 = mstatus; mstatus = mstatus & ~x2;
+    Cpu cpu = rv_helper(code, "test_csrrc", 2);
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 0) << "Error: mstatus should be 0 after CSRRC instruction";
+  }
+  {
+    std::string code = start +
+    "addi x2, x0, 5 \n"    // Load 5 into x2
+    "addi x3, x0, 3 \n"   // Load 3 into x3
+    "csrrc x1, mstatus, x2 \n"  // x1 = mstatus; mstatus = mstatus & ~x2;
+    "csrrc x4, mstatus, x3 \n";  // x4 = mstatus; mstatus = mstatus & ~x3;
+    Cpu cpu = rv_helper(code, "test_csrrc_complex", 4);
+
+    // Verify if x1 and x4 have the correct values
+    EXPECT_EQ(cpu.regs[1], 0) << "Error: x1 should be 0 after first CSRRC instruction";
+    EXPECT_EQ(cpu.regs[4], 0) << "Error: x4 should be 0 after second CSRRC instruction";
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 0) << "Error: MSTATUS should be 0 after second CSRRC instruction";
+  }
+}
+
+// Test csrrwi instruction
+TEST(RVTests, TestCsrrwi) {
+  {
+    std::string code = start +
+    "csrrwi x1, mstatus, 5 \n";  // x1 = mstatus; mstatus = 5;
+    Cpu cpu = rv_helper(code, "test_csrrwi", 1);
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 5) << "Error: mstatus should be 5 after CSRRWI instruction";
+  }
+  {
+    std::string code = start +
+    "csrrwi x1, mstatus, 5 \n"  // x1 = mstatus; mstatus = 5;
+    "csrrwi x4, mstatus, 10 \n";  // x4 = mstatus; mstatus = 10;
+    Cpu cpu = rv_helper(code, "test_csrrwi_complex", 2);
+
+    // Verify if x1 and x4 have the correct values
+    EXPECT_EQ(cpu.regs[1], 0) << "Error: x1 should be the original value of MSTATUS register after first CSRRWI instruction";
+    EXPECT_EQ(cpu.regs[4], 5) << "Error: x4 should be 5 after second CSRRWI instruction";
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 10) << "Error: MSTATUS should be 10 after second CSRRWI instruction";
+  }
+}
+
+// Test csrrsi instruction
+TEST(RVTests, TestCsrrsi) {
+  {
+    std::string code = start +
+    "csrrsi x1, mstatus, 5 \n";  // x1 = mstatus; mstatus = mstatus | (1 << 5);
+    Cpu cpu = rv_helper(code, "test_csrrsi", 1);
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 32) << "Error: mstatus should be 32 after CSRRSI instruction";
+  }
+  {
+    std::string code = start +
+    "csrrsi x1, mstatus, 5 \n"  // x1 = mstatus; mstatus = mstatus | (1 << 5);
+    "csrrsi x4, mstatus, 3 \n";  // x4 = mstatus; mstatus = mstatus | (1 << 3);
+    Cpu cpu = rv_helper(code, "test_csrrsi_complex", 2);
+
+    // Verify if x1 and x4 have the correct values
+    EXPECT_EQ(cpu.regs[1], 0) << "Error: x1 should be the original value of MSTATUS register after first CSRRSI instruction";
+    EXPECT_EQ(cpu.regs[4], 32) << "Error: x4 should be 32 after second CSRRSI instruction";
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 40) << "Error: MSTATUS should be 40 after second CSRRSI instruction";
+  }
+}
+
+// Test csrrci instruction
+TEST(RVTests, TestCsrrci) {
+  {
+    std::string code = start +
+    "csrrci x1, mstatus, 5 \n";  // x1 = mstatus; mstatus = mstatus & ~(1 << 5);
+    Cpu cpu = rv_helper(code, "test_csrrci", 1);
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 0) << "Error: mstatus should be 0 after CSRRCI instruction";
+  }
+  {
+    std::string code = start +
+    "csrrci x1, mstatus, 5 \n"  // x1 = mstatus; mstatus = mstatus & ~(1 << 5);
+    "csrrci x4, mstatus, 3 \n";  // x4 = mstatus; mstatus = mstatus & ~(1 << 3);
+    Cpu cpu = rv_helper(code, "test_csrrci_complex", 2);
+
+    // Verify if x1 and x4 have the correct values
+    EXPECT_EQ(cpu.regs[1], 0) << "Error: x1 should be the original value of MSTATUS register after first CSRRCI instruction";
+    EXPECT_EQ(cpu.regs[4], 0) << "Error: x4 should be 0 after second CSRRCI instruction";
+
+    // Verify if MSTATUS register has the correct value
+    EXPECT_EQ(cpu.getRegValueByName("mstatus"), 0) << "Error: MSTATUS should be 0 after second CSRRCI instruction";
+  }
+}
+
+TEST(CSRSTest, TestCSRS1) {
+    // 初始化测试代码
+    std::string code = start +
+        "addi t0, zero, 1 \n"
+        "addi t1, zero, 2 \n"
+        "addi t2, zero, 3 \n"
+        "csrrw zero, mstatus, t0 \n"
+        "csrrs zero, mtvec, t1 \n"
+        "csrrw zero, mepc, t2 \n"
+        "csrrc t2, mepc, zero \n"
+        "csrrwi zero, sstatus, 4 \n"
+        "csrrsi zero, stvec, 5 \n"
+        "csrrwi zero, sepc, 6 \n"
+        "csrrci zero, sepc, 0 \n";
+
+    // 创建CPU对象并运行测试代码
+    Cpu cpu = rv_helper(code, "test_csrs1", 11);
+
+    // 验证CSR寄存器的值是否正确
+    EXPECT_EQ(cpu.getRegValueByName("mstatus").value(), 1);
+    EXPECT_EQ(cpu.getRegValueByName("mtvec").value(), 2);
+    EXPECT_EQ(cpu.getRegValueByName("mepc").value(), 3);
+    EXPECT_EQ(cpu.getRegValueByName("sstatus").value(), 0);
+    EXPECT_EQ(cpu.getRegValueByName("stvec").value(), 32);
+    EXPECT_EQ(cpu.getRegValueByName("sepc").value(), 6);
+}
 
 }
