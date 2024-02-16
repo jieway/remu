@@ -71,4 +71,16 @@ constexpr uint64_t MASK_MTIP = 1 << 7;  // 机器定时器中断挂起掩码
 constexpr uint64_t MASK_SEIP = 1 << 9;  // 监管外部中断挂起掩码
 constexpr uint64_t MASK_MEIP = 1 << 11;  // 机器外部中断挂起掩码
 
+// 使用 uint64_t 定义 Mode 类型
+using Mode = uint64_t;
+
+// 定义 User 模式，二进制表示为 00
+constexpr Mode User = 0b00;
+
+// 定义 Supervisor 模式，二进制表示为 01
+constexpr Mode Supervisor = 0b01;
+
+// 定义 Machine 模式，二进制表示为 11
+constexpr Mode Machine = 0b11;
+
 }

@@ -6,7 +6,6 @@
 #include "../test_util.h"
 
 namespace crvemu {
-
 // Test addi instruction
 TEST(RVTests, TestAddi) {
   {
@@ -199,6 +198,18 @@ TEST(RVTests, TestFENCE) {
   // 因此我们只需检查指令的执行是否完成且没有错误。
   EXPECT_EQ(cpu.pc, DRAM_BASE + 4)
   << "Error: FENCE instruction execution failed";
+}
+
+TEST(RVTests, TestSFENCE_VMA) {
+  std::string code = start +
+      "sfence.vma\n";  // SFENCE.VMA instruction
+
+  Cpu cpu = rv_helper(code, "test_sfence_vma", 1);
+
+  // 在这个模拟器中，SFENCE.VMA指令不会修改寄存器或程序计数器(PC)，
+  // 因此我们只需检查指令的执行是否完成且没有错误。
+  EXPECT_EQ(cpu.pc, DRAM_BASE + 4)
+  << "Error: SFENCE.VMA instruction execution failed";
 }
 
 // TEST(RVTests, TestLb) {
@@ -563,30 +574,71 @@ TEST(RVTests, TestCsrrci) {
 }
 
 TEST(CSRSTest, TestCSRS1) {
-    // 初始化测试代码
-    std::string code = start +
-        "addi t0, zero, 1 \n"
-        "addi t1, zero, 2 \n"
-        "addi t2, zero, 3 \n"
-        "csrrw zero, mstatus, t0 \n"
-        "csrrs zero, mtvec, t1 \n"
-        "csrrw zero, mepc, t2 \n"
-        "csrrc t2, mepc, zero \n"
-        "csrrwi zero, sstatus, 4 \n"
-        "csrrsi zero, stvec, 5 \n"
-        "csrrwi zero, sepc, 6 \n"
-        "csrrci zero, sepc, 0 \n";
+  // 初始化测试代码
+  std::string code = start +
+      "addi t0, zero, 1 \n"
+      "addi t1, zero, 2 \n"
+      "addi t2, zero, 3 \n"
+      "csrrw zero, mstatus, t0 \n"
+      "csrrs zero, mtvec, t1 \n"
+      "csrrw zero, mepc, t2 \n"
+      "csrrc t2, mepc, zero \n"
+      "csrrwi zero, sstatus, 4 \n"
+      "csrrsi zero, stvec, 5 \n"
+      "csrrwi zero, sepc, 6 \n"
+      "csrrci zero, sepc, 0 \n";
 
-    // 创建CPU对象并运行测试代码
-    Cpu cpu = rv_helper(code, "test_csrs1", 11);
+  // 创建CPU对象并运行测试代码
+  Cpu cpu = rv_helper(code, "test_csrs1", 11);
 
-    // 验证CSR寄存器的值是否正确
-    EXPECT_EQ(cpu.getRegValueByName("mstatus").value(), 1);
-    EXPECT_EQ(cpu.getRegValueByName("mtvec").value(), 2);
-    EXPECT_EQ(cpu.getRegValueByName("mepc").value(), 3);
-    EXPECT_EQ(cpu.getRegValueByName("sstatus").value(), 0);
-    EXPECT_EQ(cpu.getRegValueByName("stvec").value(), 32);
-    EXPECT_EQ(cpu.getRegValueByName("sepc").value(), 6);
+  // 验证CSR寄存器的值是否正确
+  EXPECT_EQ(cpu.getRegValueByName("mstatus").value(), 1);
+  EXPECT_EQ(cpu.getRegValueByName("mtvec").value(), 2);
+  EXPECT_EQ(cpu.getRegValueByName("mepc").value(), 3);
+  EXPECT_EQ(cpu.getRegValueByName("sstatus").value(), 0);
+  EXPECT_EQ(cpu.getRegValueByName("stvec").value(), 32);
+  EXPECT_EQ(cpu.getRegValueByName("sepc").value(), 6);
+}
+
+TEST(RVTests, TestSRET) {
+  std::string code = start +
+      "addi x2, x0, 8 \n"    // Load 5 into x2
+      "csrrw x1, sepc, x2 \n"  // x1 = sepc; sepc = x2;
+      "sret \n";  // Return from supervisor mode
+
+  Cpu cpu = rv_helper(code, "test_sret", 3);
+
+  EXPECT_EQ(cpu.getRegValueByName("sepc").value(), 8) << "Error: sepc should be set to 5";
+
+  // Verify if PC has the correct value
+  EXPECT_EQ(cpu.pc, 8) << "Error: PC should be 5 after SRET instruction";
+
+  // Verify if SPP bit in sstatus register is set to U-mode
+  EXPECT_EQ(cpu.getRegValueByName("sstatus").value() & 0x100, 0) << "Error: SPP bit should be set to U-mode after SRET instruction";
+
+  // Verify if SPIE bit in sstatus register is set to 1
+  EXPECT_EQ(cpu.getRegValueByName("sstatus").value() & 0x20, 0x20) << "Error: SPIE bit should be set to 1 after SRET instruction";
+}
+
+TEST(RVTests, TestMRET) {
+  std::string code = start +
+      "addi x2, x0, 8 \n"    // Load 5 into x2
+      "csrrw x1, mepc, x2 \n"  // x1 = mepc; mepc = x2;
+      "mret \n";  // Return from machine mode
+
+  Cpu cpu = rv_helper(code, "test_mret", 3);
+
+  // Verify if PC has the correct value
+  EXPECT_EQ(cpu.pc, 8) << "Error: PC should be 5 after MRET instruction";
+
+  // Verify if MPP bit in mstatus register is set to U-mode
+  EXPECT_EQ(cpu.getRegValueByName("mstatus").value() & 0x100, 0) << "Error: MPP bit should be set to U-mode after MRET instruction";
+
+  // Verify if MPIE bit in mstatus register is set to 1
+  EXPECT_EQ((cpu.csr.load(MSTATUS) & MASK_MPIE) >> 7, 1) << "Error: MPIE bit should be set to 1 after MRET instruction";
+
+  // Verify if MIE bit in mstatus register is set to MPIE bit
+  EXPECT_EQ((cpu.getRegValueByName("mstatus").value() & 0x2), (cpu.getRegValueByName("mstatus").value() & 0x20) >> 4) << "Error: MIE bit should be set to MPIE bit after MRET instruction";
 }
 
 }
