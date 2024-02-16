@@ -83,43 +83,32 @@ std::optional<uint64_t> Cpu::getRegValueByName(const std::string& name) {
     return regs[index];
   }
 
-  // 尝试在CSR寄存器中查找
-  if (name == "mhartid") {
-    return csr.load(MHARTID);
-  } else if (name == "mstatus") {
-    return csr.load(MSTATUS);
-  } else if (name == "mtvec") {
-    return csr.load(MTVEC);
-  } else if (name == "mepc") {
-    return csr.load(MEPC);
-  } else if (name == "mcause") {
-    return csr.load(MCAUSE);
-  } else if (name == "mtval") {
-    return csr.load(MTVAL);
-  } else if (name == "medeleg") {
-    return csr.load(MEDELEG);
-  } else if (name == "mscratch") {
-    return csr.load(MSCRATCH);
-  } else if (name == "MIP") {
-    return csr.load(MIP);
-  } else if (name == "mcounteren") {
-    return csr.load(MCOUNTEREN);
-  } else if (name == "sstatus") {
-    return csr.load(SSTATUS);
-  } else if (name == "stvec") {
-    return csr.load(STVEC);
-  } else if (name == "sepc") {
-    return csr.load(SEPC);
-  } else if (name == "scause") {
-    return csr.load(SCAUSE);
-  } else if (name == "stval") {
-    return csr.load(STVAL);
-  } else if (name == "sscratch") {
-    return csr.load(SSCRATCH);
-  } else if (name == "SIP") {
-    return csr.load(SIP);
-  } else if (name == "SATP") {
-    return csr.load(SATP);
+  // 创建一个映射，将寄存器的名称映射到对应的加载函数
+  std::unordered_map<std::string, std::function<std::optional<uint64_t>()>> csr_map = {
+    {"mhartid", [this]() { return csr.load(MHARTID); }},
+    {"mstatus", [this]() { return csr.load(MSTATUS); }},
+    {"mtvec", [this]() { return csr.load(MTVEC); }},
+    {"mepc", [this]() { return csr.load(MEPC); }},
+    {"mcause", [this]() { return csr.load(MCAUSE); }},
+    {"mtval", [this]() { return csr.load(MTVAL); }},
+    {"medeleg", [this]() { return csr.load(MEDELEG); }},
+    {"mscratch", [this]() { return csr.load(MSCRATCH); }},
+    {"MIP", [this]() { return csr.load(MIP); }},
+    {"mcounteren", [this]() { return csr.load(MCOUNTEREN); }},
+    {"sstatus", [this]() { return csr.load(SSTATUS); }},
+    {"stvec", [this]() { return csr.load(STVEC); }},
+    {"sepc", [this]() { return csr.load(SEPC); }},
+    {"scause", [this]() { return csr.load(SCAUSE); }},
+    {"stval", [this]() { return csr.load(STVAL); }},
+    {"sscratch", [this]() { return csr.load(SSCRATCH); }},
+    {"SIP", [this]() { return csr.load(SIP); }},
+    {"SATP", [this]() { return csr.load(SATP); }},
+  };
+
+  // 尝试在映射中查找
+  auto map_it = csr_map.find(name);
+  if (map_it != csr_map.end()) {
+    return map_it->second();
   }
 
   // 如果在寄存器和CSR寄存器中都找不到，返回std::nullopt
