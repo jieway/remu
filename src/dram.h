@@ -1,6 +1,5 @@
 // Dram.h
-#ifndef DRAM_H
-#define DRAM_H
+#pragma once
 
 #include <vector>
 #include <cstdint>
@@ -19,4 +18,3 @@ private:
   std::vector<uint8_t> dram;
 };
 }
-#endif // DRAM_H

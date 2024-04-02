@@ -2,8 +2,7 @@
 // Created by Jie Wei on 2024/2/13.
 //
 
-#ifndef CSR_H
-#define CSR_H
+#pragma once
 #include <iostream>
 #include <iomanip>
 #include <array>
@@ -25,4 +24,3 @@ private:
 };
 
 }
-#endif //CSR_H

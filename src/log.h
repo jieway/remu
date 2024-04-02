@@ -1,13 +1,12 @@
 //
 // Created by Jie Wei on 2024/2/12.
 //
-
-#ifndef LOG_H
-#define LOG_H
+#pragma once
 
 #include <iostream>
 #include <string_view>
 
+namespace crvemu {
 constexpr std::string_view RED = "\033[0;31m";
 constexpr std::string_view GREEN = "\033[0;32m";
 constexpr std::string_view YELLOW = "\033[0;33m";
@@ -16,18 +15,11 @@ constexpr std::string_view DIM = "\033[0;37m";
 constexpr std::string_view NC = "\033[0m";  // No color
 
 // Log 级别
-enum LogLevel {
-  DEBUG,
-  INFO,
-  WARNING,
-  ERROR
-};
+enum LogLevel { DEBUG, INFO, WARNING, ERROR };
 
 // 接受任何可以通过 << 输出的类型
 template <typename T>
-concept Printable = requires(std::ostream& os, T s) {
-  os << s;
-};
+concept Printable = requires(std::ostream& os, T s) { os << s; };
 
 // 是否启用 debug panic 输出
 constexpr bool ENABLE_DEBUG_PANIC = true;
@@ -56,8 +48,7 @@ void print_log(std::ostream& os, LogLevel level, Args&&... s) {
 
 #define LOG(level, ...)                                             \
   do {                                                              \
-    print_log(std::cout, level, "In function ", __FUNCTION__, " (", \
-    __FILE__, ':', __LINE__, "): ", __VA_ARGS__);                   \
+    print_log(std::cout, level, "In function ", __FUNCTION__, " (", __FILE__, ':', __LINE__, "): ", __VA_ARGS__);                   \
   } while (0)
 
-#endif //LOG_H
+}

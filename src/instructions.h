@@ -1,13 +1,11 @@
 //
 // Created by Jie Wei on 2024/2/5.
 //
-#ifndef INSTRUCTION_H
-#define INSTRUCTION_H
+#pragma once
 
 #include <cstdint>
 #include <functional>
 #include <optional>
-#include "instructions.h"
 #include "cup.h"
 
 namespace crvemu {
@@ -18,5 +16,3 @@ public:
 };
 
 }
-
-#endif

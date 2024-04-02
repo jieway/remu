@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "../../src/dram.h"
 #include "../../src/param.h"
+#include "../../src/exception.h"
 
 namespace crvemu {
 
@@ -26,12 +27,11 @@ TEST_F(DramTest, StoreTest) {
 }
 
 TEST_F(DramTest, InvalidLoadTest) {
-  auto value = dram.load(DRAM_BASE, 10);
-  ASSERT_FALSE(value.has_value());
+  EXPECT_THROW(dram.load(DRAM_BASE, 10), Exception);
 }
 
 TEST_F(DramTest, InvalidStoreTest) {
-  ASSERT_FALSE(dram.store(DRAM_BASE, 10, 0x01));
+  EXPECT_THROW(dram.store(DRAM_BASE, 10, 0x01), Exception);
 }
 
 }  // namespace crvemu
