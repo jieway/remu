@@ -107,4 +107,18 @@ constexpr uint64_t PLIC_SPRIORITY = PLIC_BASE + 0x201000;
 // 会写这个寄存器来通知PLIC中断已经被处理。
 constexpr uint64_t PLIC_SCLAIM = PLIC_BASE + 0x201004;
 
+// CLINT的基地址，所有的CLINT寄存器都从这个地址开始映射到内存中。
+constexpr uint64_t CLINT_BASE = 0x2000000;
+
+// CLINT的大小，表示CLINT寄存器在内存中的映射区域的大小。这个大小是0x10000。
+constexpr uint64_t CLINT_SIZE = 0x10000;
+
+// CLINT的结束地址，表示CLINT寄存器在内存中的映射区域的结束地址。
+constexpr uint64_t CLINT_END = CLINT_BASE + CLINT_SIZE - 1;
+
+// CLINT的mtimecmp寄存器的地址，可以通过设置这个寄存器来设置中断的触发时间。
+constexpr uint64_t CLINT_MTIMECMP = CLINT_BASE + 0x4000;
+
+// CLINT的mtime寄存器的地址，表示当前的时间。
+constexpr uint64_t CLINT_MTIME = CLINT_BASE + 0xbff8;
 }
