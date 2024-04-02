@@ -10,7 +10,7 @@
 
 使用 docker 开发，其内部包含了一个 Ubuntu 20.04，其中用到了 `riscv64-unknown-elf-gcc`， 也可以用 clang 来编译。
 
-lab0-start-code 分支是一个包含了 gtest 的启动代码。项目名称为 crvemu ，即 C++ RISC-V Emulate 的缩写。
+lab0-start-code 分支是一个包含了 gtest 的启动代码。项目名称为 remu ，即 Rapid Emulator 的缩写。
 
 ### 问题
 
