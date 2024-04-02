@@ -85,4 +85,26 @@ constexpr Mode Supervisor = 0b01;
 // 定义 Machine 模式，二进制表示为 11
 constexpr Mode Machine = 0b11;
 
+// PLIC的基地址，所有的PLIC寄存器都从这个地址开始映射到内存中。
+constexpr uint64_t PLIC_BASE = 0xc000000;
+
+// PLIC的大小，表示PLIC寄存器在内存中的映射区域的大小。这个大小是0x4000000。
+constexpr uint64_t PLIC_SIZE = 0x4000000;
+
+// PLIC的结束地址，表示PLIC寄存器在内存中的映射区域的结束地址。
+constexpr uint64_t PLIC_END = PLIC_BASE + PLIC_SIZE - 1;
+
+// PLIC的挂起寄存器的地址，当有中断挂起时，对应的位会被设置为1。
+constexpr uint64_t PLIC_PENDING = PLIC_BASE + 0x1000;
+
+// PLIC的使能寄存器的地址，可以通过设置这个寄存器来使能或禁止中断。
+constexpr uint64_t PLIC_SENABLE = PLIC_BASE + 0x2000;
+
+// PLIC的优先级寄存器的地址，可以通过设置这个寄存器来改变中断的优先级。
+constexpr uint64_t PLIC_SPRIORITY = PLIC_BASE + 0x201000;
+
+// PLIC的确认寄存器的地址，当处理器处理完一个中断后，
+// 会写这个寄存器来通知PLIC中断已经被处理。
+constexpr uint64_t PLIC_SCLAIM = PLIC_BASE + 0x201004;
+
 }
