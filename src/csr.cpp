@@ -6,22 +6,13 @@
 
 namespace crvemu {
 
-/**
- * @brief Constructor for the Csr class.
- *
- * This constructor initializes all CSR (Control Status Registers) to 0.
- */
+// 构造函数
 Csr::Csr() {
   csrs.fill(0); // 初始化所有CSR为0
 }
 
 
-/**
- * @brief Prints the current state of the control status registers.
- *
- * This function prints the current state of the control status registers in a formatted manner.
- * It prints the values of MSTATUS, MTVEC, MEPC, MCAUSE, SSTATUS, STVEC, SEPC, and SCAUSE registers.
- */
+// 打印所有的 CSR 寄存器
 void Csr::dump_csrs() const {
   std::cout << std::setw(80) << std::setfill('-') << "control status registers" << std::setfill(' ') << "\n";
   std::cout << "mstatus = " << std::hex << std::setw(18) << load(MSTATUS)
@@ -34,15 +25,7 @@ void Csr::dump_csrs() const {
             << "  scause = " << std::setw(18) << load(SCAUSE) << "\n";
 }
 
-/**
- * @brief Loads the value of a specific CSR.
- *
- * This function loads the value of a specific CSR from the array of CSRs.
- * It returns the value of the CSR at the specified address.
- *
- * @param addr The address of the CSR to load.
- * @return The value of the CSR at the specified address.
- */
+// 从 CSR 寄存器指定的位置中加载值
 uint64_t Csr::load(size_t addr) const {
   switch (addr) {
     case SIE:
@@ -56,19 +39,7 @@ uint64_t Csr::load(size_t addr) const {
   }
 }
 
-/**
- * @brief Stores a value into a specific CSR.
- *
- * This function stores a value into a specific CSR at the given address.
- * Depending on the address, the function performs different operations:
- * - If the address is SIE, it stores the value into the MIE register, taking into account the MIDELEG register.
- * - If the address is SIP, it stores the value into the MIP register, taking into account the MIDELEG register.
- * - If the address is SSTATUS, it stores the value into the MSTATUS register, taking into account the MASK_SSTATUS.
- * - For any other address, it directly stores the value into the CSR at the given address.
- *
- * @param addr The address of the CSR to store the value into.
- * @param value The value to store into the CSR.
- */
+// 将 value 存放到 CSR 寄存器指定的位置中
 void Csr::store(size_t addr, uint64_t value) {
   switch (addr) {
     case SIE:
@@ -85,30 +56,20 @@ void Csr::store(size_t addr, uint64_t value) {
   }
 }
 
-/**
- * @brief Checks if a specific bit in the MEDELEG register is set.
- *
- * This function checks if the bit at the position specified by 'val' in the MEDELEG register is set.
- * The MEDELEG register is used to delegate some exceptions from M-mode to S-mode.
- * If the bit is set, it means that the corresponding exception is delegated.
- *
- * @param val The position of the bit to check in the MEDELEG register.
- * @return true if the bit at position 'val' is set, false otherwise.
- */
+// 这个函数的目的是检查 MEDELEG 寄存器中的某一位是否被设置。
+// 在 RISC-V 架构中，MEDELEG 寄存器用于将某些中断从 M-mode
+// 委托给 S-mode。如果 MEDELEG 寄存器中的某一位被设置，那么
+// 对应的中断就被委托给了 S-mode。这个函数就是用来检查这种委
+// 托状态的。
 bool Csr::is_medelegated(uint64_t val) const {
   return (csrs[MEDELEG] >> val & 1) == 1;
 }
 
-/**
- * @brief Checks if a specific bit in the MIDELEG register is set.
- *
- * This function checks if the bit at the position specified by 'val' in the MIDELEG register is set.
- * The MIDELEG register is used to delegate some interrupts from M-mode to S-mode.
- * If the bit is set, it means that the corresponding interrupt is delegated.
- *
- * @param val The position of the bit to check in the MIDELEG register.
- * @return true if the bit at position 'val' is set, false otherwise.
- */
+// 这个函数的目的是检查 MIDELEG 寄存器中的某一位是否被设置。
+// 在 RISC-V 架构中，MIDELEG 寄存器用于将某些中断从 M-mode
+// 委托给 S-mode。如果 MIDELEG 寄存器中的某一位被设置，
+// 那么对应的中断就被委托给了 S-mode。这个函数就是用来检查这种
+// 委托状态的。
 bool Csr::is_midelegated(uint64_t cause) const {
   return (csrs[MIDELEG] >> cause & 1) == 1;
 }

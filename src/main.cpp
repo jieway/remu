@@ -29,23 +29,18 @@ int main(int argc, char* argv[]) {
         break;
       }
       auto new_pc = cpu.execute(inst.value());
-      if (!new_pc.has_value()) {
-        LOG(crvemu::ERROR, "Execution of instruction failed.");
-        break;
-      }
-
       cpu.pc = new_pc.value();
     } catch (const crvemu::Exception& e) {
-//      cpu.handle_exception(e);
+      cpu.handle_exception(e);
       if (e.isFatal()) {
-        LOG(crvemu::ERROR, "Fatal error: ", e.what());
+        LOG(crvemu::INFO, "Fatal error: ", e.what());
         break;
       }
     }
   }
-  // 使用cpu对象进行操作
+
   cpu.dump_registers(); // 打印寄存器状态
-  cpu.dump_pc();
+  cpu.dump_pc();        // 打印PC寄存器状态
 
   return 0;
 }

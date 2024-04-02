@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
-#include "instructions.h"
 #include "cup.h"
 
 namespace crvemu {

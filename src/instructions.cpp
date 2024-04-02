@@ -760,7 +760,7 @@ std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
     if (result.has_value()) {
       LOG(INFO, "Instruction executed successfully. New PC: 0x", std::hex, result.value(), std::dec);
     } else {
-      LOG(ERROR, "Failed to execute instruction.");
+      throw Exception(ExceptionType::IllegalInstruction, inst);
     }
     return result;
   }
@@ -801,7 +801,7 @@ std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
     if (result.has_value()) {
       LOG(INFO, "Instruction executed successfully. New PC: 0x", std::hex, result.value(), std::dec);
     } else {
-      LOG(ERROR, "Failed to execute instruction.");
+      throw Exception(ExceptionType::IllegalInstruction, inst);
     }
     return result;
   }
@@ -832,14 +832,14 @@ std::optional<uint64_t> InstructionExecutor::execute(Cpu& cpu, uint32_t inst) {
     if (result.has_value()) {
       LOG(INFO, "Instruction executed successfully. New PC: 0x", std::hex, result.value(), std::dec);
     } else {
-      LOG(ERROR, "Failed to execute instruction.");
+      throw Exception(ExceptionType::IllegalInstruction, inst);
     }
     return result;
   } else {
     LOG(ERROR, "Unsupported instruction: 0x", std::hex, inst,
       ", opcode: 0x", opcode, ", funct3: 0x", funct3,
       ", funct7: 0x", std::hex, funct7, std::dec);
-    return std::nullopt;
+    throw Exception(ExceptionType::IllegalInstruction, inst);
   }
 }
 
