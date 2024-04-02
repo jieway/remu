@@ -6,7 +6,7 @@
 #include <cstdint>
 #include "exception.h"
 
-namespace crvemu {
+namespace cemu {
 
 // 这个类的设计是为了模拟PLIC的功能，使得在模拟器中可以像在真实硬件中一样处理中断。
 // 这个类的方法提供了对PLIC寄存器的读写操作，这些操作在处理中断时是必需的。

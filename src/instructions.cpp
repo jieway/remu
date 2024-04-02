@@ -28,7 +28,7 @@ struct hash<std::tuple<uint32_t, uint32_t, uint32_t>> {
 }
 
 
-namespace crvemu {
+namespace cemu {
 
 
 // 拆包解包

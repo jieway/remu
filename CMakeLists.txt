@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(crvemu)
+project(cemu)
 
 # 设置C++标准为C++20
 set(CMAKE_CXX_STANDARD 23)
@@ -30,12 +30,12 @@ set(COMMON_SOURCES
 add_library(common_library ${COMMON_SOURCES})
 
 # 可执行文件
-add_executable(crvemu
+add_executable(cemu
         src/main.cpp
 )
 
-# 将库链接到 crvemu 可执行文件
-target_link_libraries(crvemu common_library)
+# 将库链接到 cemu 可执行文件
+target_link_libraries(cemu common_library)
 
 # 启用测试并添加测试文件
 enable_testing()

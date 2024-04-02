@@ -3,7 +3,7 @@
 #include "clint.h"
 #include <stdexcept>
 
-namespace crvemu {
+namespace cemu {
 
 Clint::Clint() : mtime(0), mtimecmp(0) {}
 

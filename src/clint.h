@@ -5,7 +5,7 @@
 #include "exception.h"
 #include "param.h"
 
-namespace crvemu {
+namespace cemu {
 
 class Clint {
  private:

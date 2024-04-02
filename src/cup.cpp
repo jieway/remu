@@ -10,7 +10,7 @@
 #include "instructions.h"
 #include "log.h"
 
-namespace crvemu {
+namespace cemu {
 
 std::optional<uint64_t> Cpu::load(uint64_t addr, uint64_t size) {
   return bus.load(addr, size);

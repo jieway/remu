@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string_view>
 
-namespace crvemu {
+namespace cemu {
 constexpr std::string_view RED = "\033[0;31m";
 constexpr std::string_view GREEN = "\033[0;32m";
 constexpr std::string_view YELLOW = "\033[0;33m";

@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 #include "../../src/clint.h"
 
-namespace crvemu {
+namespace cemu {
 
 class ClintTest : public ::testing::Test {
  protected:

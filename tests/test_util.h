@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include "../src/cup.h"
-namespace crvemu {
+namespace cemu {
 
 // 消除警告： warning: cannot find entry symbol _start; defaulting to 0000000000000000
 const std::string start = ".global _start \n _start:";

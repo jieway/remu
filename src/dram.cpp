@@ -5,7 +5,7 @@
 #include "log.h"
 #include "exception.h"
 
-namespace crvemu {
+namespace cemu {
 
 Dram::Dram(const std::vector<uint8_t>& code) {
   dram.resize(DRAM_SIZE, 0); // Initialize DRAM with 0s

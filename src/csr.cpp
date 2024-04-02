@@ -4,7 +4,7 @@
 
 #include "csr.h"
 
-namespace crvemu {
+namespace cemu {
 
 // 构造函数
 Csr::Csr() {

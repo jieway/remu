@@ -6,7 +6,7 @@
 #include "../../src/plic.h"
 #include "../../src/param.h"
 
-namespace crvemu {
+namespace cemu {
 
 class PlicTest : public ::testing::Test {
  protected:
@@ -60,4 +60,4 @@ TEST_F(PlicTest, UnknownAddressTest) {
 //  EXPECT_EQ(plic.load(PLIC_SCLAIM, 32), 2);
 //  EXPECT_EQ(plic.load(PLIC_SCLAIM, 32), 1);
 //}
-}  // namespace crvemu
+}  // namespace cemu

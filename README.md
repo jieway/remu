@@ -14,4 +14,4 @@ lab0-start-code 分支是一个包含了 gtest 的启动代码。项目名称为
 
 ### 问题
 
-如有任何问题，可以随时提 [issue](https://github.com/weijiew/crvemu/issues)。
+如有任何问题，可以随时提 [issue](https://github.com/weijiew/cemu/issues)。

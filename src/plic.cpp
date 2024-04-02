@@ -7,7 +7,7 @@
 #include "plic.h"
 #include "param.h"
 
-namespace crvemu {
+namespace cemu {
 
 uint64_t Plic::load(uint64_t addr, uint64_t size) {
   if (size != 32) {
