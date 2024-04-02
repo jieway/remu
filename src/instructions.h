@@ -1,8 +1,7 @@
 //
 // Created by Jie Wei on 2024/2/5.
 //
-#ifndef INSTRUCTION_H
-#define INSTRUCTION_H
+#pragma once
 
 #include <cstdint>
 #include <functional>
@@ -18,5 +17,3 @@ public:
 };
 
 }
-
-#endif

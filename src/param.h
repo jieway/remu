@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstddef> // 引入定义 std::size_t 的头文件
 
 namespace crvemu {

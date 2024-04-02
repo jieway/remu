@@ -3,8 +3,7 @@
 //
 
 // Cpu.h
-#ifndef CPU_H
-#define CPU_H
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -14,6 +13,7 @@
 
 #include "bus.h"
 #include "csr.h"
+#include "exception.h"
 
 namespace crvemu {
 
@@ -60,6 +60,8 @@ public:
 
   std::optional<uint64_t> getRegValueByName(const std::string& name);
 
+  void handle_exception(const Exception& e);
+
 private:
   // 在类外初始化静态成员
   const std::array<std::string, 32> RVABI = {
@@ -73,4 +75,4 @@ private:
 
 }
 
-#endif // CPU_H
+

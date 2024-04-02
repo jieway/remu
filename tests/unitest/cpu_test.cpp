@@ -25,12 +25,11 @@ TEST_F(CpuTest, StoreTest) {
 }
 
 TEST_F(CpuTest, InvalidLoadTest) {
-    auto value = cpu.load(DRAM_BASE, 10);
-    ASSERT_FALSE(value.has_value());
+  EXPECT_THROW(cpu.load(DRAM_BASE, 10), Exception);
 }
 
 TEST_F(CpuTest, InvalidStoreTest) {
-    ASSERT_FALSE(cpu.store(DRAM_BASE, 10, 0x01));
+  EXPECT_THROW(cpu.store(DRAM_BASE, 10, 0x01), Exception);
 }
 
 }  // namespace crvemu

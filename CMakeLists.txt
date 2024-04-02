@@ -19,6 +19,8 @@ set(COMMON_SOURCES
         src/log.h
         src/csr.h
         src/csr.cpp
+        src/exception.cpp
+        src/exception.h
 )
 
 add_library(common_library ${COMMON_SOURCES})
@@ -43,6 +45,7 @@ add_executable(unit_test
         tests/unitest/bus_test.cpp
         tests/unitest/cpu_test.cpp
         tests/unitest/csr_test.cpp
+        tests/unitest/exception.cpp
 )
 
 # 将库链接到 unit_test 可执行文件

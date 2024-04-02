@@ -11,30 +11,13 @@
 #include "log.h"
 
 namespace crvemu {
-std::optional<uint64_t> Cpu::load(uint64_t addr, uint64_t size) {
-  auto val = bus.load(addr, size);
-  if (val.has_value()) {
-    LOG(INFO, "Load successful. Value: ", std::hex, val.value());
-    return val;
-  }
 
-  LOG(WARNING, "Load failed. Invalid address: ", std::hex, addr);
-  return std::nullopt;
+std::optional<uint64_t> Cpu::load(uint64_t addr, uint64_t size) {
+  return bus.load(addr, size);
 }
 
 bool Cpu::store(uint64_t addr, uint64_t size, uint64_t value) {
-  LOG(INFO, "Storing value ", value, " at address ", std::hex, addr, " with size ", size, " bytes.");
-
-  // Assuming bus.store returns a boolean indicating success
-  bool result = bus.store(addr, size, value);
-
-  if (result) {
-    LOG(INFO, "Store successful.");
-  } else {
-    LOG(WARNING, "Store failed.");
-  }
-
-  return result;
+  return bus.store(addr, size, value);
 }
 
 std::optional<uint32_t> Cpu::fetch() {
@@ -43,8 +26,7 @@ std::optional<uint32_t> Cpu::fetch() {
     LOG(INFO, "Instruction fetched: ", std::hex, inst.value(), std::dec);
     return inst.value();
   }
-  LOG(WARNING, "Fetch failed. Invalid PC: ", std::hex, pc);
-  return std::nullopt;
+  throw Exception(ExceptionType::InstructionAccessFault, pc);
 }
 
 std::optional<uint64_t>  Cpu::execute(uint32_t inst) {
@@ -53,8 +35,7 @@ std::optional<uint64_t>  Cpu::execute(uint32_t inst) {
     LOG(INFO, "Execution successful. Result: ", std::hex, exe.value());
     return exe;
   }
-  LOG(WARNING, "Execution failed.");
-  return std::nullopt;
+  throw Exception(ExceptionType::IllegalInstruction, pc);
 }
 
 void Cpu::dump_registers() {
@@ -115,4 +96,54 @@ std::optional<uint64_t> Cpu::getRegValueByName(const std::string& name) {
   LOG(WARNING, "Invalid name: ", name);
   return std::nullopt;
 }
+
+void Cpu::handle_exception(const Exception& e) {
+//  uint64_t pc = this->pc;
+//  Mode mode = this->mode;
+//  uint64_t cause = static_cast<uint64_t>(e.getType());
+//
+//  bool trap_in_s_mode = mode <= Supervisor && csr.is_medelegated(cause);
+//  uint64_t STATUS, TVEC, CAUSE, TVAL, EPC, MASK_PIE, pie_i, MASK_IE, ie_i, MASK_PP, pp_i;
+//
+//  if (trap_in_s_mode) {
+//    this->mode = Supervisor;
+//    STATUS = SSTATUS;
+//    TVEC = STVEC;
+//    CAUSE = SCAUSE;
+//    TVAL = STVAL;
+//    EPC = SEPC;
+//    MASK_PIE = MASK_SPIE;
+//    pie_i = 5;
+//    MASK_IE = MASK_SIE;
+//    ie_i = 1;
+//    MASK_PP = MASK_SPP;
+//    pp_i = 8;
+//  } else {
+//    this->mode = Machine;
+//    STATUS = MSTATUS;
+//    TVEC = MTVEC;
+//    CAUSE = MCAUSE;
+//    TVAL = MTVAL;
+//    EPC = MEPC;
+//    MASK_PIE = MASK_MPIE;
+//    pie_i = 7;
+//    MASK_IE = MASK_MIE;
+//    ie_i = 3;
+//    MASK_PP = MASK_MPP;
+//    pp_i = 11;
+//  }
+//
+//  this->pc = csr.load(TVEC) & ~0b11;
+//  csr.store(EPC, pc);
+//  csr.store(CAUSE, cause);
+//  csr.store(TVAL, e.getValue());
+//
+//  uint64_t status = csr.load(STATUS);
+//  uint64_t ie = (status & MASK_IE) >> ie_i;
+//  status = (status & ~MASK_PIE) | (ie << pie_i);
+//  status &= ~MASK_IE;
+//  status = (status & ~MASK_PP) | (mode << pp_i);
+//  csr.store(STATUS, status);
+}
+
 }

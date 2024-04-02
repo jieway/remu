@@ -1,12 +1,12 @@
 // Bus.h
-#ifndef BUS_H
-#define BUS_H
+#pragma once
 
 #include <vector>
 #include <cstdint>
 #include "dram.h" // 包含Dram类的定义
 
 namespace crvemu {
+
 class Bus {
 public:
   Bus(const std::vector<uint8_t>& code);
@@ -17,6 +17,5 @@ public:
 private:
   Dram dram;
 };
-}
 
-#endif // BUS_H
+}
