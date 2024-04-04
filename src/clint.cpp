@@ -5,8 +5,6 @@
 
 namespace cemu {
 
-Clint::Clint() : mtime(0), mtimecmp(0) {}
-
 uint64_t Clint::load(uint64_t addr, uint64_t size) {
   if (size != 64) {
     throw Exception(ExceptionType::LoadAccessFault, addr);

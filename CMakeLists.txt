@@ -25,6 +25,8 @@ set(COMMON_SOURCES
         src/plic.h
         src/clint.cpp
         src/clint.h
+        src/uart.cpp
+        src/uart.h
 )
 
 add_library(common_library ${COMMON_SOURCES})
@@ -52,6 +54,7 @@ add_executable(unit_test
         tests/unitest/exception.cpp
         tests/unitest/plic_test.cpp
         tests/unitest/client_test.cpp
+        tests/unitest/uart_test.cpp
 )
 
 # 将库链接到 unit_test 可执行文件
