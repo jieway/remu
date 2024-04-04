@@ -162,7 +162,91 @@ void Cpu::handle_exception(const Exception& e) {
   status = (status & ~MASK_PP) | (mode << pp_i);
   // 将状态寄存器（STATUS）的值保存回 CSR 中。
   csr.store(STATUS, status);
+}
 
+void Cpu::handle_interrupt(cemu::Interrupt& interrupt) {
+  // similar to handle exception
+  uint64_t pc = this->pc;
+  Mode mode = this->mode;
+  uint64_t cause = interrupt.code();
+  // although cause contains a interrupt bit. Shift the cause make it out.
+  bool trap_in_s_mode = mode <= Supervisor && this->csr.is_midelegated(cause);
+  CSR STATUS, TVEC, CAUSE, TVAL, EPC;
+  uint64_t MASK_PIE, MASK_IE, MASK_PP;
+  int pie_i, ie_i, pp_i;
+  if (trap_in_s_mode) {
+    this->mode = Supervisor;
+    STATUS = SSTATUS; TVEC = STVEC; CAUSE = SCAUSE; TVAL = STVAL; EPC = SEPC;
+    MASK_PIE = MASK_SPIE; pie_i = 5; MASK_IE = MASK_SIE; ie_i = 1; MASK_PP = MASK_SPP; pp_i = 8;
+  } else {
+    this->mode = Machine;
+    STATUS = MSTATUS; TVEC = MTVEC; CAUSE = MCAUSE; TVAL = MTVAL; EPC = MEPC;
+    MASK_PIE = MASK_MPIE; pie_i = 7; MASK_IE = MASK_MIE; ie_i = 3; MASK_PP = MASK_MPP; pp_i = 11;
+  }
+  uint64_t tvec = this->csr.load(TVEC);
+  uint64_t tvec_mode = tvec & 0b11;
+  uint64_t tvec_base = tvec & ~0b11;
+  switch (tvec_mode) { // DIrect
+    case 0:
+      this->pc = tvec_base;
+      break;
+    case 1:
+      this->pc = tvec_base + (cause << 2);
+      break;
+    default:
+      throw std::runtime_error("Unreachable code");
+  }
+  this->csr.store(EPC, pc);
+  this->csr.store(CAUSE, cause);
+  this->csr.store(TVAL, 0);
+  uint64_t status = this->csr.load(STATUS);
+  uint64_t ie = (status & MASK_IE) >> ie_i;
+  status = (status & ~MASK_PIE) | (ie << pie_i);
+  status &= ~MASK_IE;
+  status = (status & ~MASK_PP) | (static_cast<uint64_t>(mode) << pp_i);
+  this->csr.store(STATUS, status);
+}
+
+std::optional<Interrupt> Cpu::check_pending_interrupt() {
+  if ((this->mode == Machine) && (this->csr.load(MSTATUS) & MASK_MIE) == 0) {
+    return std::nullopt;
+  }
+  if ((this->mode == Supervisor) && (this->csr.load(SSTATUS) & MASK_SIE) == 0) {
+    return std::nullopt;
+  }
+
+  if (this->bus.uart.is_interrupting()) {
+    this->bus.store(PLIC_SCLAIM, 32, UART_IRQ);
+    this->csr.store(MIP, this->csr.load(MIP) | MASK_SEIP);
+  }
+
+  uint64_t pending = this->csr.load(MIE) & this->csr.load(MIP);
+
+  if ((pending & MASK_MEIP) != 0) {
+    this->csr.store(MIP, this->csr.load(MIP) & ~MASK_MEIP);
+    return Type::MachineExternalInterrupt;
+  }
+  if ((pending & MASK_MSIP) != 0) {
+    this->csr.store(MIP, this->csr.load(MIP) & ~MASK_MSIP);
+    return Interrupt::Type::MachineSoftwareInterrupt;
+  }
+  if ((pending & MASK_MTIP) != 0) {
+    this->csr.store(MIP, this->csr.load(MIP) & ~MASK_MTIP);
+    return Interrupt::Type::MachineTimerInterrupt;
+  }
+  if ((pending & MASK_SEIP) != 0) {
+    this->csr.store(MIP, this->csr.load(MIP) & ~MASK_SEIP);
+    return Interrupt::Type::SupervisorExternalInterrupt;
+  }
+  if ((pending & MASK_SSIP) != 0) {
+    this->csr.store(MIP, this->csr.load(MIP) & ~MASK_SSIP);
+    return Interrupt::Type::SupervisorSoftwareInterrupt;
+  }
+  if ((pending & MASK_STIP) != 0) {
+    this->csr.store(MIP, this->csr.load(MIP) & ~MASK_STIP);
+    return Interrupt::Type::SupervisorTimerInterrupt;
+  }
+  return std::nullopt;
 }
 
 }

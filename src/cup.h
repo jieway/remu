@@ -14,6 +14,7 @@
 #include "bus.h"
 #include "csr.h"
 #include "exception.h"
+#include "interrupt.h"
 
 namespace cemu {
 
@@ -42,25 +43,26 @@ public:
       mode = Machine;
   }
 
-  std::optional<uint64_t> load(uint64_t addr, uint64_t size);
-
-  bool store(uint64_t addr, uint64_t size, uint64_t value);
-
-  std::optional<uint32_t> fetch();
+  std::optional<uint64_t> load(uint64_t addr, uint64_t size); // 从内存中读取数据
+  bool store(uint64_t addr, uint64_t size, uint64_t value); // 将数据写入内存
+  std::optional<uint32_t> fetch();  // 从内存中获取指令
 
   [[nodiscard]] inline uint64_t update_pc() const {
     return pc + 4;
   }
 
-  std::optional<uint64_t> execute(uint32_t inst);
+  std::optional<uint64_t> execute(uint32_t inst); // 执行指令
 
-  void dump_registers();
+  void dump_registers();   // 打印所有寄存器的值
+  void dump_pc() const;    // 打印 PC 寄存器的值
 
-  void dump_pc() const;
+  std::optional<uint64_t> getRegValueByName(const std::string& name); // 通过名称获取寄存器的值
 
-  std::optional<uint64_t> getRegValueByName(const std::string& name);
+  void handle_exception(const Exception& e);          // 处理异常
 
-  void handle_exception(const Exception& e);
+  void handle_interrupt(Interrupt& interrupt);        // 处理中断
+
+  std::optional<Interrupt> check_pending_interrupt(); // 检查是否有中断
 
 private:
   // 在类外初始化静态成员

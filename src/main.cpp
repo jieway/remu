@@ -37,10 +37,13 @@ int main(int argc, char* argv[]) {
         break;
       }
     }
+    auto interrupt = cpu.check_pending_interrupt();
+    if (interrupt.has_value()) {
+      cpu.handle_interrupt(interrupt.value());
+    }
   }
 
   cpu.dump_registers(); // 打印寄存器状态
   cpu.dump_pc();        // 打印PC寄存器状态
-
   return 0;
 }
