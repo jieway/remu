@@ -8,7 +8,7 @@
 #include <optional>
 #include "cup.h"
 
-namespace crvemu {
+namespace cemu {
 
 class InstructionExecutor {
 public:

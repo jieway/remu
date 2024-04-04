@@ -6,7 +6,7 @@
 #include "log.h"
 #include "exception.h"
 
-namespace crvemu {
+namespace cemu {
 
 Bus::Bus(const std::vector<uint8_t>& code) : dram(code) {}
 

@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace crvemu {
+namespace cemu {
 class Dram {
 public:
   Dram();

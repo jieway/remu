@@ -8,7 +8,7 @@
 #include <array>
 #include "param.h"
 
-namespace crvemu {
+namespace cemu {
 
 class Csr {
 public:

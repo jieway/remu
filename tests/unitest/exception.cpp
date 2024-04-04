@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include "../../src/exception.h"
 
-namespace crvemu {
+namespace cemu {
 
 TEST(ExceptionTest, Constructor) {
   Exception e( ExceptionType::InstructionAddrMisaligned , 0x1234 );

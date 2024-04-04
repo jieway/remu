@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../../src/csr.h"
 
-namespace crvemu {
+namespace cemu {
 
 class CsrTest : public ::testing::Test {
 protected:

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(crvemu)
+project(cemu)
 
 # 设置C++标准为C++20
 set(CMAKE_CXX_STANDARD 23)
@@ -23,17 +23,21 @@ set(COMMON_SOURCES
         src/exception.h
         src/plic.cpp
         src/plic.h
+        src/clint.cpp
+        src/clint.h
+        src/uart.cpp
+        src/uart.h
 )
 
 add_library(common_library ${COMMON_SOURCES})
 
 # 可执行文件
-add_executable(crvemu
+add_executable(cemu
         src/main.cpp
 )
 
-# 将库链接到 crvemu 可执行文件
-target_link_libraries(crvemu common_library)
+# 将库链接到 cemu 可执行文件
+target_link_libraries(cemu common_library)
 
 # 启用测试并添加测试文件
 enable_testing()
@@ -49,6 +53,8 @@ add_executable(unit_test
         tests/unitest/csr_test.cpp
         tests/unitest/exception.cpp
         tests/unitest/plic_test.cpp
+        tests/unitest/client_test.cpp
+        tests/unitest/uart_test.cpp
 )
 
 # 将库链接到 unit_test 可执行文件

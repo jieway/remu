@@ -8,32 +8,32 @@
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
-    LOG(crvemu::ERROR, "Usage:\n- ./program_name <filename>");
+    LOG(cemu::ERROR, "Usage:\n- ./program_name <filename>");
     return 0;
   }
 
   std::ifstream file(argv[1], std::ios::binary);
   if (!file) {
-    LOG(crvemu::ERROR, "Cannot open file: ", argv[1]);
+    LOG(cemu::ERROR, "Cannot open file: ", argv[1]);
     return 1;
   }
 
   std::vector<uint8_t> code(std::istreambuf_iterator<char>(file), {});
-  crvemu::Cpu cpu(code); // 假设Cpu类的构造函数接受指令代码的vector
+  cemu::Cpu cpu(code); // 假设Cpu类的构造函数接受指令代码的vector
 
   while (true) {
     try {
       auto inst = cpu.fetch();
       if (!inst.has_value()) {
-        LOG(crvemu::INFO, "End of program reached.");
+        LOG(cemu::INFO, "End of program reached.");
         break;
       }
       auto new_pc = cpu.execute(inst.value());
       cpu.pc = new_pc.value();
-    } catch (const crvemu::Exception& e) {
+    } catch (const cemu::Exception& e) {
       cpu.handle_exception(e);
       if (e.isFatal()) {
-        LOG(crvemu::INFO, "Fatal error: ", e.what());
+        LOG(cemu::INFO, "Fatal error: ", e.what());
         break;
       }
     }

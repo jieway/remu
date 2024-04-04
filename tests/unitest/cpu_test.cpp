@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../../src/cup.h"
 
-namespace crvemu {
+namespace cemu {
 
 class CpuTest : public ::testing::Test {
 protected:
@@ -32,4 +32,4 @@ TEST_F(CpuTest, InvalidStoreTest) {
   EXPECT_THROW(cpu.store(DRAM_BASE, 10, 0x01), Exception);
 }
 
-}  // namespace crvemu
+}  // namespace cemu

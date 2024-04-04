@@ -5,7 +5,7 @@
 #include <cstdint>
 #include "dram.h" // 包含Dram类的定义
 
-namespace crvemu {
+namespace cemu {
 
 class Bus {
 public:

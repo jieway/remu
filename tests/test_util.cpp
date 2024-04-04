@@ -1,7 +1,7 @@
 #include "test_util.h"
 #include "../src/log.h"
 
-namespace crvemu {
+namespace cemu {
 void generate_rv_assembly(const std::string& c_src) {
   std::string command = "riscv64-unknown-elf-gcc -S" + c_src + " -o ";
   int result = std::system(command.c_str());

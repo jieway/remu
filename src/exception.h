@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace crvemu {
+namespace cemu {
 
 enum class ExceptionType {
   InstructionAddrMisaligned,  // 指令地址不对齐

@@ -3,7 +3,7 @@
 #include "../../src/param.h"
 #include "../../src/exception.h"
 
-namespace crvemu {
+namespace cemu {
 
 class DramTest : public ::testing::Test {
 protected:
@@ -34,4 +34,4 @@ TEST_F(DramTest, InvalidStoreTest) {
   EXPECT_THROW(dram.store(DRAM_BASE, 10, 0x01), Exception);
 }
 
-}  // namespace crvemu
+}  // namespace cemu

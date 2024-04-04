@@ -5,7 +5,7 @@
 #include "../../src/cup.h"
 #include "../test_util.h"
 
-namespace crvemu {
+namespace cemu {
 // Test addi instruction
 TEST(RVTests, TestAddi) {
   {

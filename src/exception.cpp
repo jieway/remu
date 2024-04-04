@@ -4,7 +4,7 @@
 
 #include "exception.h"
 
-namespace crvemu {
+namespace cemu {
 
 Exception::Exception(ExceptionType type, uint64_t value)
     : type(type), value(value) {}

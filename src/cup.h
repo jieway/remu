@@ -15,7 +15,7 @@
 #include "csr.h"
 #include "exception.h"
 
-namespace crvemu {
+namespace cemu {
 
 class Cpu {
 public:
