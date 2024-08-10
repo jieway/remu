@@ -18,9 +18,9 @@ class Cpu {
   // dram表示动态随机存取存储器
   std::vector<uint8_t> dram;
 
-public:
+ public:
   // 构造函数，初始化寄存器、程序计数器和内存
-  Cpu(const std::vector<uint8_t> &code) : pc(0), dram(DRAM_SIZE, 0) {
+  Cpu(const std::vector<uint8_t>& code) : pc(0), dram(DRAM_SIZE, 0) {
     // 初始化所有寄存器为0
     regs.fill(0);
     // 设置栈指针寄存器的初始值为内存的最后一个字节地址
@@ -52,4 +52,4 @@ public:
   uint8_t getMem(size_t index) const { return dram.at(index); }
 };
 
-#endif // CPU_H
+#endif  // CPU_H
