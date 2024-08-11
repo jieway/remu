@@ -33,3 +33,6 @@
 
 /cmake-build-debug
 /build
+
+test_*
+getdiff.sh
