@@ -16,8 +16,11 @@ constexpr std::string_view CYAN = "\033[1;36m";
 constexpr std::string_view BOLD = "\033[1m";
 
 class TestFramework {
-public:
+ public:
+  static bool allTestsPassed;
+
   static void printResult(bool success, std::string_view testName) {
+    allTestsPassed &= success;  // 如果测试失败，将 allTestsPassed 设为 false
     std::cout << (success ? GREEN : RED) << BOLD
               << (success ? "ok  " : "FAILED") << RESET << " - " << testName
               << "\n";
@@ -33,7 +36,7 @@ public:
     }
   }
 
-  // TokenType 和 tokenTypeToStringFunc 需要在使用此框架的项目中自行定义
+  // Template method for custom types
   template <typename TokenType>
   static void assertEqual(std::string_view testName, TokenType expected,
                           TokenType actual,
@@ -49,4 +52,7 @@ public:
   }
 };
 
-#endif // TEST_FRAMEWORK_HPP
+// 初始化静态变量
+bool TestFramework::allTestsPassed = true;
+
+#endif  // TEST_FRAMEWORK_HPP

@@ -142,6 +142,11 @@ int main() {
   testExecuteAddiInstruction();
   testExecuteAddInstruction();
 
-  std::cout << "All tests completed successfully.\n";
-  return 0;
+  if (TestFramework::allTestsPassed) {
+    std::cout << "All tests completed successfully.\n";
+    return EXIT_SUCCESS;  // 返回成功状态
+  } else {
+    std::cerr << "Some tests failed.\n";
+    return EXIT_FAILURE;  // 返回失败状态
+  }
 }

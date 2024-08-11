@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <iomanip>  // 用于格式化输出
 #include <iostream>
+#include <optional>
 #include <vector>
 
 // DRAM_SIZE定义了内存的大小为128MB
@@ -12,6 +13,7 @@ const uint64_t DRAM_SIZE = 1024 * 1024 * 128;
 
 // Cpu类定义
 class Cpu {
+ public:
   // regs数组表示32个寄存器
   std::array<uint64_t, 32> regs;
   // pc表示程序计数器
@@ -19,7 +21,6 @@ class Cpu {
   // dram表示动态随机存取存储器
   std::vector<uint8_t> dram;
 
- public:
   // 构造函数，初始化寄存器、程序计数器和内存
   Cpu(const std::vector<uint8_t>& code) : pc(0), dram(DRAM_SIZE, 0) {
     // 初始化所有寄存器为0
@@ -37,11 +38,12 @@ class Cpu {
                     (static_cast<uint32_t>(dram[index + 1]) << 8) |
                     (static_cast<uint32_t>(dram[index + 2]) << 16) |
                     (static_cast<uint32_t>(dram[index + 3]) << 24);
+    std::cout << "Fetched instruction: 0x" << std::hex << inst << std::dec
+              << " at PC: " << pc << std::endl;
     return inst;
   }
 
-  // 执行指令
-  void execute(uint32_t inst) {
+  std::optional<uint64_t> execute(uint32_t inst) {
     uint32_t opcode = inst & 0x7f;
     uint32_t rd = (inst >> 7) & 0x1f;
     uint32_t rs1 = (inst >> 15) & 0x1f;
@@ -49,28 +51,37 @@ class Cpu {
     uint32_t funct3 = (inst >> 12) & 0x7;
     uint32_t funct7 = (inst >> 25) & 0x7f;
 
-    std::cout << "opcode: " << std::hex << opcode << " rd: " << rd
-              << " rs1: " << rs1 << " rs2: " << rs2 << std::endl;
-    std::cout << "regs[rs1]: " << regs[rs1] << " regs[rs2]: " << regs[rs2]
-              << std::endl;
-
-    // x0 is hardwired zero
+    // x0 is hardwired to zero
     regs[0] = 0;
 
+    std::cout << "Executing instruction: 0x" << std::hex << inst << std::dec
+              << std::endl;
+
+    // Execute stage
     switch (opcode) {
       case 0x13: {  // addi
         int64_t imm = static_cast<int32_t>(inst & 0xfff00000) >> 20;
+        std::cout << "ADDI: x" << rd << " = x" << rs1 << " + " << imm
+                  << std::endl;
         regs[rd] = regs[rs1] + imm;
-        break;
+        return update_pc();
       }
       case 0x33: {  // add
+        std::cout << "ADD: x" << rd << " = x" << rs1 << " + x" << rs2
+                  << std::endl;
         regs[rd] = regs[rs1] + regs[rs2];
-        break;
+        return update_pc();
       }
-      default:
-        std::cerr << "Invalid opcode: " << std::hex << opcode << std::endl;
-        break;
+      default: {
+        std::cerr << "Invalid opcode: 0x" << std::hex << opcode << std::endl;
+        return std::nullopt;  // Indicate failure without using exceptions
+      }
     }
+  }
+
+  std::optional<uint64_t> update_pc() {
+    pc += 4;
+    return pc;
   }
 
   // 打印所有寄存器的值
