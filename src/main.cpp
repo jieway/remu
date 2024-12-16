@@ -1,13 +1,6 @@
-#include <vector>
-
-#include "cpu.h"
+#include <iostream>
 
 int main() {
-  std::vector<uint8_t> code = {1, 2, 3, 4, 5, 6, 7, 8};
-  Cpu cpu(code);
-
-  cpu.printRegs();
-  cpu.printMem();
-  std::cout << "Initialization successful!" << std::endl;
+  std::cout << "Hello, World!" << std::endl;
   return 0;
 }
