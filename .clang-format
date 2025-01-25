@@ -1,18 +1,41 @@
-# Run manually to reformat a file:
-# clang-format -i --style=file <file>
-# find . -iname '*.cc' -o -iname '*.h' -o -iname '*.h.in' | xargs clang-format -i --style=file
-BasedOnStyle: Google
-DerivePointerAlignment: false
+# ================================================
+# 🔧 基础代码风格配置（基于 Google 风格）
+# ================================================
+BasedOnStyle: Google # 🏷️ 继承 Google 代码风格（缩进 2 空格、空格运算符等）
+DerivePointerAlignment: false # 🚫 禁止自动推导指针对齐，强制按手动配置对齐
 
-# Public headers are in a different location in the internal Google repository.
-# Order them so that when imported to the authoritative repository they will be
-# in correct alphabetical order.
+# ================================================
+# 📂 头文件包含顺序规则（优先级：数值越小排序越靠前）
+# ================================================
 IncludeCategories:
+  # 第 1 优先级：系统头文件 & 项目核心目录（如 benchmarks/, db/, src/）
   - Regex: '^(<|"(benchmarks|db|helpers|src)/)'
-    Priority: 1
-  - Regex: '^"(cemu)/'
+    Priority: 1 # 🔝 最优先排列（如 <iostream>, "src/utils.h"）
+
+  # 第 2 优先级：项目特定模块（如 cemul/ 目录）
+  - Regex: '^"(cemu)/' # 🎯 项目内部模块头文件
     Priority: 2
+
+  # 第 3 优先级：通用工具 & 第三方依赖（如 util/, third_party/）
   - Regex: '^(<|"(issues|port|table|third_party|util|log|tests|src)/)'
-    Priority: 3
+    Priority: 3 # ⚙️ 工具类和测试相关头文件
+
+  # 第 4 优先级：其他未匹配的头文件
   - Regex: ".*"
-    Priority: 4
+    Priority: 4 # 📦 默认兜底规则（如用户自定义头文件）
+
+# ================================================
+# 💡 快速操作示例（终端命令）
+# ================================================
+# 🚀 格式化单个文件：
+#   clang-format -i --style=file <文件名>
+#
+# 🚀 批量格式化整个项目：
+#   find . -iname '*.cc' -o -iname '*.h' -o -iname '*.h.in' | xargs clang-format -i --style=file
+
+# ================================================
+# 📚 注意事项
+# ================================================
+# 1️⃣ 此配置优先保证代码一致性，部分规则（如指针对齐）可能覆盖 Google 风格默认值
+# 2️⃣ 头文件排序规则适配内部项目结构，迁移到外部仓库时需验证顺序
+# 3️⃣ 使用前确保已安装 clang-format 并配置环境变量

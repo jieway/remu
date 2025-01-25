@@ -2,32 +2,28 @@
 #include <cstdint>
 #include <vector>
 
-// 定义DRAM_SIZE为128MB
-const uint64_t DRAM_SIZE = 1024 * 1024 * 128;
+// 🖥️ CPU模拟器结构体：模拟RISC架构处理器核心组件
+struct Cpu {
+  std::array<uint64_t, 32> regs{};  // 🧠 32个通用寄存器，初始化为0（x0-x31）
+  uint64_t pc = 0;  // 📍 程序计数器：跟踪当前执行指令地址
+  std::vector<uint8_t> mem;  // 💾 模拟内存：存储程序指令和数据
 
-class Cpu {
-  // RISC-V 有 32 个寄存器
-  std::array<uint64_t, 32> regs;
-
-  // PC 寄存器包含下一条指令的内存地址
-  uint64_t pc;
-
-  // 内存，一个字节数组。在真实的 CPU 中没有内存，这里仅作模拟。
-  std::vector<uint8_t> dram;
-
- public:
-  // 构造函数
-  Cpu(const std::vector<uint8_t>& code) : pc(0), dram(code) {
-    regs.fill(0);             // 初始化寄存器为0
-    regs[2] = DRAM_SIZE - 1;  // 设置堆栈指针寄存器的初始值
+  // 🏗️ 构造函数：用程序代码初始化CPU
+  // 📥 参数：code - 要加载到内存中的机器码
+  Cpu(const std::vector<uint8_t>& code) : mem(code) {
+    // 🚀 初始化堆栈指针（通常x2寄存器在RISC-V中作为栈指针）
+    // 📌 栈指针指向内存末尾（假设栈向下增长）
+    regs[2] = mem.size() - 1;
   }
-
-  // 可能需要的其他成员函数声明
 };
 
 int main() {
-  // 示例代码使用
-  std::vector<uint8_t> code = {/* 初始化代码 */};
+  // 📦 创建示例代码（1KB空数据，用于演示内存初始化）
+  std::vector<uint8_t> code(1024);
+
+  // 🔌 创建CPU实例并加载代码
   Cpu cpu(code);
-  // 使用cpu对象进行操作
+
+  // 💡 提示：在实际模拟器中，这里会添加指令解码和执行循环
+  // 🎮 例如：while (running) { fetch(); decode(); execute(); }
 }
