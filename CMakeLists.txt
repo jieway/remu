@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.15)
 # 📦 定义项目基本信息：名称 remu，版本 0.1.0
 project(remu VERSION 0.1.0)
 
-# 🎯 强制要求使用 C++20 标准（需编译器支持）
-set(CMAKE_CXX_STANDARD 20)
+# 🎯 强制要求使用 C++23 标准（需编译器支持）
+set(CMAKE_CXX_STANDARD 23)
 # 🔒 明确声明必须满足上述 C++ 标准要求（否则构建失败）
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -28,5 +28,5 @@ enable_testing()
 # set(CMAKE_BUILD_TYPE Debug)
 #
 # 3. 添加编译特性检查：
-# target_compile_features(remu PRIVATE cxx_std_20)
+# target_compile_features(remu PRIVATE cxx_std_23)
 # -------------------------------------------------------------------
