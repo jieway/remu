@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "cpu.h"
+#include "logger.h"
 
 /**
  * @函数名称: main
@@ -13,7 +14,7 @@
 int main(int argc, char* argv[]) {
   // 🔍 检查命令行参数
   if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <binary-file>" << std::endl;
+    Logger::error("Usage: ", argv[0], " <binary-file>");
     return 1;
   }
 
@@ -21,15 +22,14 @@ int main(int argc, char* argv[]) {
   // 💡 ios::ate表示文件指针初始位置在文件末尾,用于获取文件大小
   std::ifstream file(argv[1], std::ios::binary | std::ios::ate);
   if (!file) {
-    std::cerr << "Error: Unable to open binary file: " << argv[1] << std::endl;
+    Logger::error("Unable to open binary file: ", argv[1]);
     return 1;
   }
 
   // 📏 获取文件大小并进行基本检查
   std::streamsize size = file.tellg();
   if (size < 4) {
-    std::cerr << "Error: Binary file is too small (minimum 4 bytes required)"
-              << std::endl;
+    Logger::error("Binary file is too small (minimum 4 bytes required)");
     return 1;
   }
 
@@ -44,15 +44,13 @@ int main(int argc, char* argv[]) {
 
   // 🖥️ 创建并初始化CPU实例
   Cpu cpu(program);
-  std::cout << "🚀 RISC-V Simulator Started (Memory: " << size << " bytes)"
-            << std::endl;
+  Logger::info("RISC-V Simulator Started (Memory: ", size, " bytes)");
 
   // ⚡ 主执行循环：获取-执行-调试
   while (cpu.pc < cpu.mem.size()) {
     // 🔒 安全检查：确保PC不会越界
     if (cpu.pc + 3 >= cpu.mem.size()) {
-      std::cerr << "Warning: PC out of bounds at 0x" << std::hex << cpu.pc
-                << std::endl;
+      Logger::warn("PC out of bounds at 0x", std::hex, cpu.pc);
       break;
     }
 
@@ -67,6 +65,6 @@ int main(int argc, char* argv[]) {
   }
 
   // 🏁 模拟器执行完成
-  std::cout << "\nSimulation Completed" << std::endl;
+  Logger::info("\nSimulation Completed");
   return 0;
 }
