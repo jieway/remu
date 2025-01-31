@@ -41,7 +41,7 @@ print_separator
 
 # 运行主程序
 echo "Running main program:"
-./src/remu
+./src/remu ../add-addi.bin
 
 print_separator
 

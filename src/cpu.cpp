@@ -1,6 +1,10 @@
+
 #include "cpu.h"
 
 #include <iomanip>
+#include <sstream>
+
+#include "logger.h"
 
 // 🏗️ 构造函数：用程序代码初始化CPU
 // 💡 参数code: 包含RISC-V程序二进制代码的内存缓冲区
@@ -28,38 +32,35 @@ void Cpu::execute(uint32_t instr) {
   // 🔍 解码指令字段
   auto fields = decode_instruction(instr);
 
-  // 🐛 打印调试信息
-  std::cout << "\nInstruction Decode Info:" << std::hex
-            << "\nRaw bytes: " << (int)(instr & 0xFF) << " "
-            << (int)((instr >> 8) & 0xFF) << " " << (int)((instr >> 16) & 0xFF)
-            << " " << (int)((instr >> 24) & 0xFF) << "\nFull instruction: 0x"
-            << instr << "\nopcode: 0x" << static_cast<int>(fields.opcode)
-            << "\nrd: " << std::dec << (int)fields.rd
-            << "\nrs1: " << (int)fields.rs1 << "\nfunct3: 0x" << std::hex
-            << (int)fields.funct3 << "\nfunct7: 0x" << (int)fields.funct7
-            << "\ni_imm: " << std::dec << fields.i_imm << std::endl;
+  // 🔍 打印指令解码信息
+  Logger::debug("Instruction Decode Info:", "\nRaw bytes: ", std::hex,
+                (int)(instr & 0xFF), " ", (int)((instr >> 8) & 0xFF), " ",
+                (int)((instr >> 16) & 0xFF), " ", (int)((instr >> 24) & 0xFF),
+                "\nFull instruction: 0x", instr, "\nopcode: 0x",
+                static_cast<int>(fields.opcode), "\nrd: ", std::dec,
+                (int)fields.rd, "\nrs1: ", (int)fields.rs1, "\nfunct3: 0x",
+                std::hex, (int)fields.funct3, "\nfunct7: 0x",
+                (int)fields.funct7, "\ni_imm: ", std::dec, fields.i_imm);
 
   // 🎮 根据操作码执行相应指令
   switch (fields.opcode) {
     case OpCode::ADDI:  // ➕ 立即数加法指令
-      std::cout << "Executing ADDI instruction: x" << std::dec << (int)fields.rd
-                << " = x" << (int)fields.rs1 << " + " << fields.i_imm
-                << std::endl;
+      Logger::info("Executing ADDI instruction: x", std::dec, (int)fields.rd,
+                   " = x", (int)fields.rs1, " + ", fields.i_imm);
       regs[fields.rd] = regs[fields.rs1] + fields.i_imm;
       break;
 
     case OpCode::ADD:  // ➕ 寄存器加法指令
       if (fields.funct3 == 0x0 && fields.funct7 == 0x0) {
-        std::cout << "Executing ADD instruction: x" << std::dec
-                  << (int)fields.rd << " = x" << (int)fields.rs1 << " + x"
-                  << (int)fields.rs2 << std::endl;
+        Logger::info("Executing ADD instruction: x", std::dec, (int)fields.rd,
+                     " = x", (int)fields.rs1, " + x", (int)fields.rs2);
         regs[fields.rd] = regs[fields.rs1] + regs[fields.rs2];
       }
       break;
 
     default:  // ❓ 未知指令处理
-      std::cout << "Unknown instruction! opcode: 0x" << std::hex
-                << static_cast<int>(fields.opcode) << std::endl;
+      Logger::warn("Unknown instruction! opcode: 0x", std::hex,
+                   static_cast<int>(fields.opcode));
   }
 
   pc += 4;      // 🔄 更新程序计数器，指向下一条指令
@@ -68,8 +69,8 @@ void Cpu::execute(uint32_t instr) {
 
 // 📊 调试输出：显示关键寄存器状态
 void Cpu::debug() {
-  std::cout << "\n=== CPU State ===\n";
-  std::cout << "PC: 0x" << std::hex << pc << std::endl;
+  Logger::debug("\n=== CPU State ===");
+  Logger::debug("PC: 0x", std::hex, pc);
 
   // 📝 打印所有寄存器的值，每行打印4个寄存器
   const char* reg_names[] = {
@@ -77,15 +78,16 @@ void Cpu::debug() {
       "a1",   "a2", "a3", "a4", "a5",  "a6",  "a7", "s2", "s3",    "s4", "s5",
       "s6",   "s7", "s8", "s9", "s10", "s11", "t3", "t4", "t5",    "t6"};
 
+  std::stringstream ss;
   for (int i = 0; i < 32; i += 4) {
-    std::cout << std::hex;
+    ss.str("");
     for (int j = 0; j < 4 && (i + j) < 32; j++) {
-      std::cout << "x" << std::dec << (i + j) << "(" << reg_names[i + j]
-                << "): 0x" << std::hex << regs[i + j] << "\t";
+      ss << "x" << std::dec << (i + j) << "(" << reg_names[i + j] << "): 0x"
+         << std::hex << regs[i + j] << "\t";
     }
-    std::cout << std::endl;
+    Logger::debug(ss.str());
   }
-  std::cout << "================\n";
+  Logger::debug("================");
 }
 
 // 🔍 解码指令：将32位指令解析为各个字段
