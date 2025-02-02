@@ -76,6 +76,18 @@ void Cpu::execute(uint32_t instr) {
                                  static_cast<int>(fields.rs2)));
         regs[fields.rd] = regs[fields.rs1] + regs[fields.rs2];
       }
+      // 当 funct3=0x0 且 funct7=0x20 时执行减法
+      else if (fields.funct3 == 0x0 && fields.funct7 == 0x20) {
+        Logger::info(std::format("Executing SUB instruction: x{} = x{} - x{}",
+                                 static_cast<int>(fields.rd),
+                                 static_cast<int>(fields.rs1),
+                                 static_cast<int>(fields.rs2)));
+        regs[fields.rd] = regs[fields.rs1] - regs[fields.rs2];
+      } else {
+        Logger::warn(std::format(
+            "Unknown variation for ADD opcode! funct3=0x{:x}, funct7=0x{:x}",
+            static_cast<int>(fields.funct3), static_cast<int>(fields.funct7)));
+      }
       break;
 
     default:  // ❓ 未知或未实现的指令

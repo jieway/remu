@@ -5,6 +5,7 @@
 # - ../src/cpu.cpp：被测 CPU 模块的源文件，是核心功能实现部分 ➡️ 🖥️
 add_executable(test_runner  
     test_main.cpp      # 🧪 测试主入口（管理和执行测试逻辑）
+    helpers.cpp        # 🧪 辅助函数实现文件
     ../src/cpu.cpp     # 🖥️ 被测 CPU 模块（核心功能实现，需要验证）
 )  
 
