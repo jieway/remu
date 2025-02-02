@@ -49,53 +49,47 @@ class Logger {
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
 
-  // 📝 模板函数：记录调试级别日志，自动捕获调用位置
+  // 🎚️ 设置最低日志级别，只有级别不低于该设置的日志才会被输出
+  void set_min_level(LogLevel level) { min_level_ = level; }
+
+  /**
+   * 下列这几个函数用于供宏来调用，并将调用点的 source_location 传入
+   * 这样就能保证拿到的行号是宏展开处的行号
+   */
   template <typename... Args>
-  static void debug(Args&&... args) {
-    instance().log(LogLevel::Debug, std::source_location::current(),
-                   std::forward<Args>(args)...);
+  void debug(const std::source_location& location, Args&&... args) {
+    log(LogLevel::Debug, location, std::forward<Args>(args)...);
   }
 
   // 📝 模板函数：记录信息级别日志，自动捕获调用位置
   template <typename... Args>
-  static void info(Args&&... args) {
-    instance().log(LogLevel::Info, std::source_location::current(),
-                   std::forward<Args>(args)...);
+  void info(const std::source_location& location, Args&&... args) {
+    log(LogLevel::Info, location, std::forward<Args>(args)...);
   }
 
   // 📝 模板函数：记录警告级别日志，自动捕获调用位置
   template <typename... Args>
-  static void warn(Args&&... args) {
-    instance().log(LogLevel::Warn, std::source_location::current(),
-                   std::forward<Args>(args)...);
+  void warn(const std::source_location& location, Args&&... args) {
+    log(LogLevel::Warn, location, std::forward<Args>(args)...);
   }
 
   // 📝 模板函数：记录错误级别日志，自动捕获调用位置
   template <typename... Args>
-  static void error(Args&&... args) {
-    instance().log(LogLevel::Error, std::source_location::current(),
-                   std::forward<Args>(args)...);
+  void error(const std::source_location& location, Args&&... args) {
+    log(LogLevel::Error, location, std::forward<Args>(args)...);
   }
 
   // 📝 模板函数：记录致命错误日志，自动捕获调用位置
   template <typename... Args>
-  static void fatal(Args&&... args) {
-    instance().log(LogLevel::Fatal, std::source_location::current(),
-                   std::forward<Args>(args)...);
+  void fatal(const std::source_location& location, Args&&... args) {
+    log(LogLevel::Fatal, location, std::forward<Args>(args)...);
   }
-
-  // 🎚️ 设置最低日志级别，只有级别不低于该设置的日志才会被输出
-  void set_min_level(LogLevel level) { min_level_ = level; }
 
  private:
   // 🏗️ 私有构造函数，保证 Logger 只能通过 instance() 方法获取（单例模式）
   Logger() = default;
 
-  // 📝 核心日志记录模板函数
-  // 参数：
-  //   level    - 当前日志的级别
-  //   location - 调用日志函数的代码位置（文件名、行号）
-  //   args     - 日志消息主体，支持多个参数拼接
+  // 📝 核心日志记录函数（私有），仅供上述几个接口调用
   template <typename... Args>
   void log(LogLevel level, const std::source_location& location,
            Args&&... args) {
@@ -112,9 +106,7 @@ class Logger {
     // 📊 构建日志消息
     std::stringstream ss;
     ss << level_colors[static_cast<size_t>(level)]  // 设置颜色
-       << "["
-       << std::put_time(std::localtime(&timestamp),
-                        "%Y-%m-%d %H:%M:%S")
+       << "[" << std::put_time(std::localtime(&timestamp), "%Y-%m-%d %H:%M:%S")
        << "] "                                      // 添加时间戳
        << level_emojis[static_cast<size_t>(level)]  // 添加对应的 emoji
        << " "
@@ -149,5 +141,20 @@ class Logger {
       Colors::MAGENTA  // Fatal - 品红色
   };
 };
+
+/**
+ * 在头文件中定义若干用于实际调用的宏，调用时会在用户代码展开，
+ * 因而 source_location::current() 能捕获到用户代码处的行号。
+ */
+#define LOG_DEBUG(...) \
+  Logger::instance().debug(std::source_location::current(), __VA_ARGS__)
+#define LOG_INFO(...) \
+  Logger::instance().info(std::source_location::current(), __VA_ARGS__)
+#define LOG_WARN(...) \
+  Logger::instance().warn(std::source_location::current(), __VA_ARGS__)
+#define LOG_ERROR(...) \
+  Logger::instance().error(std::source_location::current(), __VA_ARGS__)
+#define LOG_FATAL(...) \
+  Logger::instance().fatal(std::source_location::current(), __VA_ARGS__)
 
 #endif  // LOGGER_H

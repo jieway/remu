@@ -55,44 +55,44 @@ void Cpu::execute(uint32_t instr) {
       instr, static_cast<int>(fields.opcode), static_cast<int>(fields.rd),
       static_cast<int>(fields.rs1), static_cast<int>(fields.funct3),
       static_cast<int>(fields.funct7), fields.i_imm);
-  Logger::debug(instr_info);  // 📣 输出解码信息到调试日志
+  LOG_DEBUG(instr_info);  // 📣 输出解码信息到调试日志
 
   // 🎮 根据解码后的操作码执行指令
   switch (fields.opcode) {
     // ➕ ADDI 指令：执行 x[rd] = x[rs1] + i_imm
     [[likely]] case OpCode::ADDI:
-      Logger::info(std::format("Executing ADDI instruction: x{} = x{} + {}",
-                               static_cast<int>(fields.rd),
-                               static_cast<int>(fields.rs1), fields.i_imm));
+      LOG_INFO(std::format("Executing ADDI instruction: x{} = x{} + {}",
+                           static_cast<int>(fields.rd),
+                           static_cast<int>(fields.rs1), fields.i_imm));
       regs[fields.rd] = regs[fields.rs1] + fields.i_imm;
       break;
 
     // ➕ ADD 指令：当 funct3 和 funct7 均为0时，执行 x[rd] = x[rs1] + x[rs2]
     [[likely]] case OpCode::ADD:
       if (fields.funct3 == 0x0 && fields.funct7 == 0x0) {
-        Logger::info(std::format("Executing ADD instruction: x{} = x{} + x{}",
-                                 static_cast<int>(fields.rd),
-                                 static_cast<int>(fields.rs1),
-                                 static_cast<int>(fields.rs2)));
+        LOG_INFO(std::format("Executing ADD instruction: x{} = x{} + x{}",
+                             static_cast<int>(fields.rd),
+                             static_cast<int>(fields.rs1),
+                             static_cast<int>(fields.rs2)));
         regs[fields.rd] = regs[fields.rs1] + regs[fields.rs2];
       }
       // 当 funct3=0x0 且 funct7=0x20 时执行减法
       else if (fields.funct3 == 0x0 && fields.funct7 == 0x20) {
-        Logger::info(std::format("Executing SUB instruction: x{} = x{} - x{}",
-                                 static_cast<int>(fields.rd),
-                                 static_cast<int>(fields.rs1),
-                                 static_cast<int>(fields.rs2)));
+        LOG_INFO(std::format("Executing SUB instruction: x{} = x{} - x{}",
+                             static_cast<int>(fields.rd),
+                             static_cast<int>(fields.rs1),
+                             static_cast<int>(fields.rs2)));
         regs[fields.rd] = regs[fields.rs1] - regs[fields.rs2];
       } else {
-        Logger::warn(std::format(
+        LOG_WARN(std::format(
             "Unknown variation for ADD opcode! funct3=0x{:x}, funct7=0x{:x}",
             static_cast<int>(fields.funct3), static_cast<int>(fields.funct7)));
       }
       break;
 
     default:  // ❓ 未知或未实现的指令
-      Logger::warn(std::format("Unknown instruction! opcode: 0x{0:#x}",
-                               static_cast<int>(fields.opcode)));
+      LOG_WARN(std::format("Unknown instruction! opcode: 0x{0:#x}",
+                           static_cast<int>(fields.opcode)));
   }
 
   // 🔄 更新程序计数器，将 pc 前进至下一条指令位置
@@ -103,8 +103,8 @@ void Cpu::execute(uint32_t instr) {
 // 📊 调试函数：输出当前 CPU 状态（程序计数器及各寄存器的值）
 // 利用 std::format 生成格式化字符串输出
 void Cpu::debug() {
-  Logger::debug("\n=== CPU State ===");
-  Logger::debug(std::format("PC: 0x{0:#x}", pc));
+  LOG_DEBUG("\n=== CPU State ===");
+  LOG_DEBUG(std::format("PC: 0x{0:#x}", pc));
 
   // 🔠 定义寄存器名称数组，便于调试时直观查看各寄存器的作用
   const std::array reg_names = {
@@ -119,9 +119,9 @@ void Cpu::debug() {
       line += std::format("x{}({}): 0x{:#x}\t", i + j, reg_names[i + j],
                           regs[i + j]);
     }
-    Logger::debug(line);
+    LOG_DEBUG(line);
   }
-  Logger::debug("================");
+  LOG_DEBUG("================");
 }
 
 // 🔍 指令解码函数：将 32 位指令拆分为各个字段，方便后续操作

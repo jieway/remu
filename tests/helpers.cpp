@@ -84,9 +84,8 @@
   }
   bin_file.close();
 
-  // 📊 日志记录（通过 Logger 单例）
-  // 记录生成的二进制文件大小（单位：字节）
-  Logger::info(log_prefix, static_cast<uint64_t>(size), " bytes");
+  // 📊 日志记录：使用 LOG_INFO 宏记录生成的二进制文件大小
+  LOG_INFO(log_prefix, static_cast<uint64_t>(size), " bytes");
 
   // 🧹 步骤5：资源清理
   // 安全特性：无论成功与否都会执行清理
