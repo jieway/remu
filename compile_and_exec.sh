@@ -40,9 +40,8 @@ echo "Running tests:"
 print_separator
 
 # 运行主程序
-echo "Running main program:"
-./src/remu ../add-addi.bin
-
-print_separator
+# echo "Running main program:"
+# ./src/remu ../add-addi.bin
+# print_separator
 
 echo "All done!"
